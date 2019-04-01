@@ -2,22 +2,39 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
+const usage = `Crossbuild, zip, shasum for each GOOS/GOARCH and render templates.
+
+Usage:
+  %[1]s [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-t "FILE ..."] [-tvar "KEY=VALUE ..."]
+
+Options:
+`
+
 func main() {
 	var o struct {
-		dir        string
-		target     string
-		osarchList string
+		dir              string
+		target           string
+		osarchList       string
+		templateFileList string
+		templateVarList  string
 	}
 	f := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	f.Usage = func() {
+		_, _ = fmt.Fprintf(f.Output(), usage, f.Name())
+		f.PrintDefaults()
+	}
 	f.StringVar(&o.dir, "d", "dist", "Destination dir")
 	f.StringVar(&o.target, "o", filepath.Base(os.Args[0]), "Target name")
 	f.StringVar(&o.osarchList, "osarch", "linux_amd64 darwin_amd64 windows_amd64", "List of GOOS_GOARCH separated by space")
+	f.StringVar(&o.templateFileList, "t", "", "List of template files separated by space")
+	f.StringVar(&o.templateVarList, "tvar", "", "List of template variables as KEY=VALUE separated by space")
 	if err := f.Parse(os.Args[1:]); err != nil {
 		log.Fatal(err)
 	}
@@ -69,18 +86,23 @@ func main() {
 		templateData[osarch+"_zip_sha256"] = shaOut.SHA256
 	}
 
-	templateData["version"] = "v1.0.0" //TODO: as options
+	var e []TemplateEntry
+	for _, t := range strings.Split(o.templateFileList, " ") {
+		e = append(e, TemplateEntry{
+			InputFilename:  t,
+			OutputFilename: filepath.Join(o.dir, filepath.Base(t)),
+		})
+	}
+
+	for _, v := range strings.Split(o.templateVarList, " ") {
+		kv := strings.SplitN(v, "=", 2)
+		templateData[kv[0]] = kv[1]
+	}
 
 	log.Printf("Rendering templates with data %+v", templateData)
 	if err := (&RenderTemplate{}).Do(RenderTemplateIn{
-		Entries: []TemplateEntry{
-			{
-				//TODO: as options
-				InputFilename:  "testdata/goxzst.rb",
-				OutputFilename: o.dir + "/goxzst.rb",
-			},
-		},
-		Data: templateData,
+		Entries: e,
+		Data:    templateData,
 	}); err != nil {
 		log.Fatal(err)
 	}
