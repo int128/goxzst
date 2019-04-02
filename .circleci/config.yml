@@ -5,8 +5,8 @@ jobs:
       - image: circleci/golang:1.11.2
     steps:
       - checkout
-      - run: go vet
-      - run: go test -v ./...
+      - run: make check
+      - run: make run
 
 workflows:
   version: 2
