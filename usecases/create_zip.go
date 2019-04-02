@@ -1,26 +1,21 @@
-package main
+package usecases
 
 import (
 	"archive/zip"
 	"io"
 	"os"
 
+	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
 )
 
-type CreateZipIn struct {
-	OutputFilename string
-	Entries        []ZipEntry
-}
-
-type ZipEntry struct {
-	Name          string
-	InputFilename string
+func NewCreateZip() usecases.CreateZip {
+	return &CreateZip{}
 }
 
 type CreateZip struct{}
 
-func (u *CreateZip) Do(in CreateZipIn) error {
+func (u *CreateZip) Do(in usecases.CreateZipIn) error {
 	output, err := os.Create(in.OutputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while creating the file %s", in.OutputFilename)
@@ -39,9 +34,9 @@ func (u *CreateZip) Do(in CreateZipIn) error {
 	return nil
 }
 
-func (*CreateZip) addEntry(zipWriter *zip.Writer, e ZipEntry) error {
+func (*CreateZip) addEntry(zipWriter *zip.Writer, e usecases.ZipEntry) error {
 	h := &zip.FileHeader{
-		Name:   e.Name,
+		Name:   e.Path,
 		Method: zip.Deflate,
 	}
 	stat, err := os.Stat(e.InputFilename)
@@ -51,7 +46,7 @@ func (*CreateZip) addEntry(zipWriter *zip.Writer, e ZipEntry) error {
 	h.SetMode(stat.Mode())
 	w, err := zipWriter.CreateHeader(h)
 	if err != nil {
-		return errors.Wrapf(err, "error while creating a header for the file %s", e.Name)
+		return errors.Wrapf(err, "error while creating a header for the file %s", e.Path)
 	}
 	input, err := os.Open(e.InputFilename)
 	if err != nil {

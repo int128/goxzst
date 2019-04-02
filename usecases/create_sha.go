@@ -1,4 +1,4 @@
-package main
+package usecases
 
 import (
 	"crypto/sha256"
@@ -7,21 +7,17 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
 )
 
-type CreateSHAIn struct {
-	InputFilename  string
-	OutputFilename string
-}
-
-type CreateSHAOut struct {
-	SHA256 string
+func NewCreateSHA() usecases.CreateSHA {
+	return &CreateSHA{}
 }
 
 type CreateSHA struct{}
 
-func (*CreateSHA) Do(in CreateSHAIn) (*CreateSHAOut, error) {
+func (*CreateSHA) Do(in usecases.CreateSHAIn) (*usecases.CreateSHAOut, error) {
 	input, err := os.Open(in.InputFilename)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error while opening the file %s", in.InputFilename)
@@ -38,7 +34,7 @@ func (*CreateSHA) Do(in CreateSHAIn) (*CreateSHAOut, error) {
 	if err := ioutil.WriteFile(in.OutputFilename, []byte(h), 0644); err != nil {
 		return nil, errors.Wrapf(err, "error while writing to the file %s", in.OutputFilename)
 	}
-	return &CreateSHAOut{
+	return &usecases.CreateSHAOut{
 		SHA256: h,
 	}, nil
 }
