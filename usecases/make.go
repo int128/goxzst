@@ -31,10 +31,6 @@ func (u *Make) Do(in usecases.MakeIn) error {
 	}
 
 	templateVariables := make(map[string]string)
-	for k, v := range in.TemplateVariables {
-		templateVariables[k] = v
-	}
-
 	for _, target := range in.Targets {
 		executableFilename := filepath.Join(in.OutputDir,
 			fmt.Sprintf("%s_%s_%s", in.OutputName, target.GOOS, target.GOARCH))

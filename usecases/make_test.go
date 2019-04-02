@@ -88,7 +88,6 @@ func TestMake_Do(t *testing.T) {
 				InputFilename:  "template1",
 				OutputFilename: "dir/template1",
 				Variables: map[string]string{
-					"version":                "v1.0.0",
 					"linux_amd64_zip_sha256": "sha256",
 				},
 			})
@@ -108,7 +107,6 @@ func TestMake_Do(t *testing.T) {
 			},
 			GoBuildArgs:       []string{"-ldflags", "-X foo=bar"},
 			TemplateFilenames: []string{"template1"},
-			TemplateVariables: map[string]string{"version": "v1.0.0"},
 		}); err != nil {
 			t.Errorf("Do returned error: %+v", err)
 		}

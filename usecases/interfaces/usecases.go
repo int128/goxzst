@@ -14,7 +14,6 @@ type MakeIn struct {
 	Targets           []build.Target
 	GoBuildArgs       []string
 	TemplateFilenames []string
-	TemplateVariables map[string]string
 }
 
 type CrossBuild interface {

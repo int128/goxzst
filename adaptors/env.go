@@ -22,6 +22,10 @@ func (*Env) Getwd() (string, error) {
 	return dir, nil
 }
 
+func (*Env) Getenv(key string) string {
+	return os.Getenv(key)
+}
+
 // Exec runs and waits for a process.
 // It inherits env vars of the current process.
 // It sets Stdout and Stderr to the os defaults.

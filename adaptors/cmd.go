@@ -16,7 +16,7 @@ import (
 const usage = `Crossbuild, zip, shasum for each GOOS/GOARCH and render templates.
 
 Usage:
-  %[1]s [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-t "FILE ..."] [-tvar "KEY=VALUE ..."] [--] [build args]
+  %[1]s [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-t "FILE ..."] [--] [build args]
 
 Options:
 `
@@ -44,16 +44,10 @@ func (cmd *Cmd) Run(args []string) int {
 	f.StringVar(&o.outputName, "o", filepath.Base(wd), "Output name")
 	f.StringVar(&o.osarch, "osarch", "linux_amd64 darwin_amd64 windows_amd64", "List of GOOS_GOARCH separated by space")
 	f.StringVar(&o.templateFilenames, "t", "", "List of template files separated by space")
-	f.StringVar(&o.templateVariables, "tvar", "", "List of template variables as KEY=VALUE separated by space")
 	if err := f.Parse(args[1:]); err != nil {
 		return 1
 	}
 	targets, err := o.targetList()
-	if err != nil {
-		cmd.Logger.Logf("Invalid arguments: %s", err)
-		return 1
-	}
-	templateVariableList, err := o.templateVariableMap()
 	if err != nil {
 		cmd.Logger.Logf("Invalid arguments: %s", err)
 		return 1
@@ -65,7 +59,6 @@ func (cmd *Cmd) Run(args []string) int {
 		Targets:           targets,
 		GoBuildArgs:       f.Args(),
 		TemplateFilenames: o.templateFilenameList(),
-		TemplateVariables: templateVariableList,
 	}
 	if err := cmd.Make.Do(in); err != nil {
 		cmd.Logger.Logf("Error: %s", err)
@@ -79,7 +72,6 @@ type cmdOptions struct {
 	outputName        string
 	osarch            string
 	templateFilenames string
-	templateVariables string
 }
 
 func (o *cmdOptions) targetList() ([]build.Target, error) {
@@ -102,20 +94,4 @@ func (o *cmdOptions) templateFilenameList() []string {
 		return nil
 	}
 	return strings.Split(o.templateFilenames, " ")
-}
-
-func (o *cmdOptions) templateVariableMap() (map[string]string, error) {
-	if o.templateVariables == "" {
-		return nil, nil
-	}
-	vars := make(map[string]string)
-	for _, s := range strings.Split(o.templateVariables, " ") {
-		p := strings.SplitN(s, "=", 2)
-		if len(p) != 2 {
-			return nil, errors.Errorf("template variable must be KEY=VALUE but was %s", s)
-		}
-		k, v := p[0], p[1]
-		vars[k] = v
-	}
-	return vars, nil
 }

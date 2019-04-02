@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"path/filepath"
 	"text/template"
 
 	"github.com/int128/goxzst/adaptors/interfaces"
@@ -15,15 +16,22 @@ func NewRenderTemplate(i RenderTemplate) usecases.RenderTemplate {
 
 type RenderTemplate struct {
 	dig.In
+	Env        adaptors.Env
 	Filesystem adaptors.Filesystem
 }
 
 func (u *RenderTemplate) Do(in usecases.RenderTemplateIn) error {
-	tpl, err := template.ParseFiles(in.InputFilename)
+	tpl, err := template.New(filepath.Base(in.InputFilename)).
+		Option("missingkey=zero").
+		Funcs(template.FuncMap{
+			"env": func(key string) string {
+				return u.Env.Getenv(key)
+			},
+		}).
+		ParseFiles(in.InputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while loading templates")
 	}
-	tpl.Option("missingkey=zero")
 
 	output, err := u.Filesystem.Create(in.OutputFilename)
 	if err != nil {

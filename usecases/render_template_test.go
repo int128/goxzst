@@ -14,6 +14,12 @@ func TestNewRenderTemplate(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	env := mock_adaptors.NewMockEnv(ctrl)
+	env.EXPECT().
+		Getenv("VERSION").
+		Return("v1.0.0").
+		AnyTimes()
+
 	var b bytes.Buffer
 	filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 	filesystem.EXPECT().
@@ -21,13 +27,13 @@ func TestNewRenderTemplate(t *testing.T) {
 		Return(&nopWriteCloser{&b}, nil)
 
 	u := RenderTemplate{
+		Env:        env,
 		Filesystem: filesystem,
 	}
 	if err := u.Do(usecases.RenderTemplateIn{
 		InputFilename:  "testdata/goxzst.rb",
 		OutputFilename: "output",
 		Variables: map[string]string{
-			"version":                 "v1.0.0",
 			"darwin_amd64_zip_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
 		},
 	}); err != nil {
