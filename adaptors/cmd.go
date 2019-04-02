@@ -3,7 +3,6 @@ package adaptors
 import (
 	"flag"
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -29,13 +28,14 @@ func NewCmd(i Cmd) adaptors.Cmd {
 type Cmd struct {
 	dig.In
 	Make   usecases.Make
+	Env    adaptors.Env
 	Logger adaptors.Logger
 }
 
 func (cmd *Cmd) Run(args []string) int {
-	wd, _ := os.Getwd()
+	wd, _ := cmd.Env.Getwd()
 	var o cmdOptions
-	f := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	f := flag.NewFlagSet(args[0], flag.ExitOnError)
 	f.Usage = func() {
 		_, _ = fmt.Fprintf(f.Output(), usage, f.Name())
 		f.PrintDefaults()
@@ -45,7 +45,7 @@ func (cmd *Cmd) Run(args []string) int {
 	f.StringVar(&o.osarch, "osarch", "linux_amd64 darwin_amd64 windows_amd64", "List of GOOS_GOARCH separated by space")
 	f.StringVar(&o.templateFilenames, "t", "", "List of template files separated by space")
 	f.StringVar(&o.templateVariables, "tvar", "", "List of template variables as KEY=VALUE separated by space")
-	if err := f.Parse(os.Args[1:]); err != nil {
+	if err := f.Parse(args[1:]); err != nil {
 		return 1
 	}
 	targets, err := o.targetList()
@@ -99,16 +99,16 @@ func (o *cmdOptions) targetList() ([]build.Target, error) {
 
 func (o *cmdOptions) templateFilenameList() []string {
 	if o.templateFilenames == "" {
-		return []string{}
+		return nil
 	}
 	return strings.Split(o.templateFilenames, " ")
 }
 
 func (o *cmdOptions) templateVariableMap() (map[string]string, error) {
-	vars := make(map[string]string)
 	if o.templateVariables == "" {
-		return vars, nil
+		return nil, nil
 	}
+	vars := make(map[string]string)
 	for _, s := range strings.Split(o.templateVariables, " ") {
 		p := strings.SplitN(s, "=", 2)
 		if len(p) != 2 {

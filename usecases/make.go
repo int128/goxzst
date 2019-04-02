@@ -2,9 +2,9 @@ package usecases
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
+	"github.com/int128/goxzst/adaptors/interfaces"
 	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
 	"go.uber.org/dig"
@@ -20,11 +20,12 @@ type Make struct {
 	CreateZip      usecases.CreateZip
 	CreateSHA      usecases.CreateSHA
 	RenderTemplate usecases.RenderTemplate
+	Filesystem     adaptors.Filesystem
 }
 
 func (u *Make) Do(in usecases.MakeIn) error {
 	if in.OutputDir != "" {
-		if err := os.MkdirAll(in.OutputDir, 0755); err != nil {
+		if err := u.Filesystem.MkdirAll(in.OutputDir); err != nil {
 			return errors.Wrapf(err, "error while creating the output directory")
 		}
 	}

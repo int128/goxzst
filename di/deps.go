@@ -13,4 +13,6 @@ var dependencies = []interface{}{
 	usecases.NewRenderTemplate,
 	adaptors.NewCmd,
 	adaptors.NewLogger,
+	adaptors.NewEnv,
+	adaptors.NewFilesystem,
 }

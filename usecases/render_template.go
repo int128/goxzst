@@ -1,18 +1,22 @@
 package usecases
 
 import (
-	"os"
 	"text/template"
 
+	"github.com/int128/goxzst/adaptors/interfaces"
 	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
+	"go.uber.org/dig"
 )
 
-func NewRenderTemplate() usecases.RenderTemplate {
-	return &RenderTemplate{}
+func NewRenderTemplate(i RenderTemplate) usecases.RenderTemplate {
+	return &i
 }
 
-type RenderTemplate struct{}
+type RenderTemplate struct {
+	dig.In
+	Filesystem adaptors.Filesystem
+}
 
 func (u *RenderTemplate) Do(in usecases.RenderTemplateIn) error {
 	tpl, err := template.ParseFiles(in.InputFilename)
@@ -21,7 +25,7 @@ func (u *RenderTemplate) Do(in usecases.RenderTemplateIn) error {
 	}
 	tpl.Option("missingkey=zero")
 
-	output, err := os.Create(in.OutputFilename)
+	output, err := u.Filesystem.Create(in.OutputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while creating the file %s", in.OutputFilename)
 	}

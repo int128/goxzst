@@ -3,20 +3,24 @@ package usecases
 import (
 	"archive/zip"
 	"io"
-	"os"
 
+	"github.com/int128/goxzst/adaptors/interfaces"
 	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
+	"go.uber.org/dig"
 )
 
-func NewCreateZip() usecases.CreateZip {
-	return &CreateZip{}
+func NewCreateZip(i CreateZip) usecases.CreateZip {
+	return &i
 }
 
-type CreateZip struct{}
+type CreateZip struct {
+	dig.In
+	Filesystem adaptors.Filesystem
+}
 
 func (u *CreateZip) Do(in usecases.CreateZipIn) error {
-	output, err := os.Create(in.OutputFilename)
+	output, err := u.Filesystem.Create(in.OutputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while creating the file %s", in.OutputFilename)
 	}
@@ -34,21 +38,21 @@ func (u *CreateZip) Do(in usecases.CreateZipIn) error {
 	return nil
 }
 
-func (*CreateZip) addEntry(zipWriter *zip.Writer, e usecases.ZipEntry) error {
+func (u *CreateZip) addEntry(zipWriter *zip.Writer, e usecases.ZipEntry) error {
 	h := &zip.FileHeader{
 		Name:   e.Path,
 		Method: zip.Deflate,
 	}
-	stat, err := os.Stat(e.InputFilename)
+	mode, err := u.Filesystem.GetMode(e.InputFilename)
 	if err != nil {
-		return errors.Wrapf(err, "error while getting status of the file %s", e.InputFilename)
+		return errors.Wrapf(err, "error while getting mode of the file %s", e.InputFilename)
 	}
-	h.SetMode(stat.Mode())
+	h.SetMode(mode)
 	w, err := zipWriter.CreateHeader(h)
 	if err != nil {
 		return errors.Wrapf(err, "error while creating a header for the file %s", e.Path)
 	}
-	input, err := os.Open(e.InputFilename)
+	input, err := u.Filesystem.Open(e.InputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while opening the file %s", e.InputFilename)
 	}

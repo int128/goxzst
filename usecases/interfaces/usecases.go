@@ -2,6 +2,8 @@ package usecases
 
 import "github.com/int128/goxzst/models/build"
 
+//go:generate mockgen -package mock_usecases -destination ../mock_usecases/mock_usecases.go github.com/int128/goxzst/usecases/interfaces Make,CrossBuild,CreateZip,CreateSHA,RenderTemplate
+
 type Make interface {
 	Do(in MakeIn) error
 }

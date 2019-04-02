@@ -2,8 +2,6 @@ package usecases
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/int128/goxzst/adaptors/interfaces"
@@ -18,19 +16,23 @@ func NewCrossBuild(i CrossBuild) usecases.CrossBuild {
 
 type CrossBuild struct {
 	dig.In
+	Env    adaptors.Env
 	Logger adaptors.Logger
 }
 
 func (u *CrossBuild) Do(in usecases.CrossBuildIn) error {
-	cmd := exec.Command("go", "build", "-o", in.OutputFilename)
-	cmd.Args = append(cmd.Args, in.GoBuildArgs...)
-	cmd.Env = append(os.Environ(),
+	args := append([]string{"build", "-o", in.OutputFilename}, in.GoBuildArgs...)
+	env := []string{
 		fmt.Sprintf("GOOS=%s", in.Target.GOOS),
-		fmt.Sprintf("GOARCH=%s", in.Target.GOARCH))
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	u.Logger.Logf("go %s", strings.Join(cmd.Args, " "))
-	if err := cmd.Run(); err != nil {
+		fmt.Sprintf("GOARCH=%s", in.Target.GOARCH),
+	}
+
+	u.Logger.Logf("%s go %s", strings.Join(env, " "), strings.Join(args, " "))
+	if err := u.Env.Exec(adaptors.ExecIn{
+		Name:     "go",
+		Args:     args,
+		ExtraEnv: env,
+	}); err != nil {
 		return errors.Wrapf(err, "go build error")
 	}
 	return nil
