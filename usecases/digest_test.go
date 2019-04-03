@@ -11,7 +11,7 @@ import (
 	"github.com/int128/goxzst/usecases/interfaces"
 )
 
-func TestCreateSHA_Do(t *testing.T) {
+func TestDigest_Do(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -24,10 +24,10 @@ func TestCreateSHA_Do(t *testing.T) {
 		Open("input1").
 		Return(ioutil.NopCloser(strings.NewReader("text1")), nil)
 
-	u := CreateSHA{
+	u := Digest{
 		Filesystem: filesystem,
 	}
-	out, err := u.Do(usecases.CreateSHAIn{
+	out, err := u.Do(usecases.DigestIn{
 		InputFilename:  "input1",
 		OutputFilename: "output",
 	})

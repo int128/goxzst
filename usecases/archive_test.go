@@ -14,7 +14,7 @@ import (
 	"github.com/int128/goxzst/usecases/interfaces"
 )
 
-func TestCreateZip_Do(t *testing.T) {
+func TestArchive_Do(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -36,12 +36,12 @@ func TestCreateZip_Do(t *testing.T) {
 		Open("input2").
 		Return(ioutil.NopCloser(strings.NewReader("text2")), nil)
 
-	u := CreateZip{
+	u := Archive{
 		Filesystem: filesystem,
 	}
-	if err := u.Do(usecases.CreateZipIn{
+	if err := u.Do(usecases.ArchiveIn{
 		OutputFilename: "output",
-		Entries: []usecases.ZipEntry{
+		Entries: []usecases.ArchiveEntry{
 			{
 				Path:          "entry1",
 				InputFilename: "input1",

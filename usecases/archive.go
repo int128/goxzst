@@ -10,16 +10,16 @@ import (
 	"go.uber.org/dig"
 )
 
-func NewCreateZip(i CreateZip) usecases.CreateZip {
+func NewArchive(i Archive) usecases.Archive {
 	return &i
 }
 
-type CreateZip struct {
+type Archive struct {
 	dig.In
 	Filesystem adaptors.Filesystem
 }
 
-func (u *CreateZip) Do(in usecases.CreateZipIn) error {
+func (u *Archive) Do(in usecases.ArchiveIn) error {
 	output, err := u.Filesystem.Create(in.OutputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while creating the file %s", in.OutputFilename)
@@ -38,7 +38,7 @@ func (u *CreateZip) Do(in usecases.CreateZipIn) error {
 	return nil
 }
 
-func (u *CreateZip) addEntry(zipWriter *zip.Writer, e usecases.ZipEntry) error {
+func (u *Archive) addEntry(zipWriter *zip.Writer, e usecases.ArchiveEntry) error {
 	h := &zip.FileHeader{
 		Name:   e.Path,
 		Method: zip.Deflate,

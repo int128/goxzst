@@ -2,7 +2,7 @@ package usecases
 
 import "github.com/int128/goxzst/models/build"
 
-//go:generate mockgen -package mock_usecases -destination ../mock_usecases/mock_usecases.go github.com/int128/goxzst/usecases/interfaces Make,CrossBuild,CreateZip,CreateSHA,RenderTemplate
+//go:generate mockgen -package mock_usecases -destination ../mock_usecases/mock_usecases.go github.com/int128/goxzst/usecases/interfaces Make,CrossBuild,Archive,Digest,RenderTemplate
 
 type Make interface {
 	Do(in MakeIn) error
@@ -26,30 +26,30 @@ type CrossBuildIn struct {
 	Platform       build.Platform
 }
 
-type CreateZip interface {
-	Do(in CreateZipIn) error
+type Archive interface {
+	Do(in ArchiveIn) error
 }
 
-type CreateZipIn struct {
+type ArchiveIn struct {
 	OutputFilename string
-	Entries        []ZipEntry
+	Entries        []ArchiveEntry
 }
 
-type ZipEntry struct {
+type ArchiveEntry struct {
 	Path          string
 	InputFilename string
 }
 
-type CreateSHA interface {
-	Do(in CreateSHAIn) (*CreateSHAOut, error)
+type Digest interface {
+	Do(in DigestIn) (*DigestOut, error)
 }
 
-type CreateSHAIn struct {
+type DigestIn struct {
 	InputFilename  string
 	OutputFilename string
 }
 
-type CreateSHAOut struct {
+type DigestOut struct {
 	SHA256 string
 }
 

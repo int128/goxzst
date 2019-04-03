@@ -8,9 +8,10 @@ import (
 var dependencies = []interface{}{
 	usecases.NewMake,
 	usecases.NewCrossBuild,
-	usecases.NewCreateZip,
-	usecases.NewCreateSHA,
+	usecases.NewArchive,
+	usecases.NewDigest,
 	usecases.NewRenderTemplate,
+
 	adaptors.NewCmd,
 	adaptors.NewLogger,
 	adaptors.NewEnv,

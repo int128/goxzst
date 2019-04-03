@@ -11,16 +11,16 @@ import (
 	"go.uber.org/dig"
 )
 
-func NewCreateSHA(i CreateSHA) usecases.CreateSHA {
+func NewDigest(i Digest) usecases.Digest {
 	return &i
 }
 
-type CreateSHA struct {
+type Digest struct {
 	dig.In
 	Filesystem adaptors.Filesystem
 }
 
-func (u *CreateSHA) Do(in usecases.CreateSHAIn) (*usecases.CreateSHAOut, error) {
+func (u *Digest) Do(in usecases.DigestIn) (*usecases.DigestOut, error) {
 	input, err := u.Filesystem.Open(in.InputFilename)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error while opening the file %s", in.InputFilename)
@@ -46,7 +46,7 @@ func (u *CreateSHA) Do(in usecases.CreateSHAIn) (*usecases.CreateSHAOut, error) 
 		return nil, errors.Errorf("wants to write %d bytes but wrote %d bytes to the file %s", len(h), n, in.OutputFilename)
 	}
 
-	return &usecases.CreateSHAOut{
+	return &usecases.DigestOut{
 		SHA256: h,
 	}, nil
 }

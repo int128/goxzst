@@ -17,8 +17,8 @@ func NewMake(i Make) usecases.Make {
 type Make struct {
 	dig.In
 	CrossBuild     usecases.CrossBuild
-	CreateZip      usecases.CreateZip
-	CreateSHA      usecases.CreateSHA
+	Archive        usecases.Archive
+	Digest         usecases.Digest
 	RenderTemplate usecases.RenderTemplate
 	Filesystem     adaptors.Filesystem
 }
@@ -45,9 +45,9 @@ func (u *Make) Do(in usecases.MakeIn) error {
 			return errors.Wrapf(err, "error while cross build")
 		}
 
-		if err := u.CreateZip.Do(usecases.CreateZipIn{
+		if err := u.Archive.Do(usecases.ArchiveIn{
 			OutputFilename: zipFilename,
-			Entries: []usecases.ZipEntry{
+			Entries: []usecases.ArchiveEntry{
 				{
 					Path:          in.OutputName,
 					InputFilename: executableFilename,
@@ -57,7 +57,7 @@ func (u *Make) Do(in usecases.MakeIn) error {
 			return errors.Wrapf(err, "error while creating zip")
 		}
 
-		shaOut, err := u.CreateSHA.Do(usecases.CreateSHAIn{
+		out, err := u.Digest.Do(usecases.DigestIn{
 			InputFilename:  zipFilename,
 			OutputFilename: shaFilename,
 		})
@@ -65,7 +65,7 @@ func (u *Make) Do(in usecases.MakeIn) error {
 			return errors.Wrapf(err, "error while creating digest")
 		}
 
-		templateVariables[fmt.Sprintf("%s_%s_zip_sha256", platform.GOOS, platform.GOARCH)] = shaOut.SHA256
+		templateVariables[fmt.Sprintf("%s_%s_zip_sha256", platform.GOOS, platform.GOARCH)] = out.SHA256
 	}
 
 	for _, t := range in.TemplateFilenames {
