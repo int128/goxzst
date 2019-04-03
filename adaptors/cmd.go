@@ -24,7 +24,7 @@ Examples:
     %[1]s -osarch "linux_amd64 linux_arm"
 
   You can pass extra arguments to go build:
-    %[1]s -- -ldflags "-X version=$VERSION"
+    %[1]s -- -ldflags "-X main.version=$VERSION"
 
 Usage:
   %[1]s [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-t "FILE ..."] [--] [build args]

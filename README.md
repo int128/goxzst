@@ -39,7 +39,7 @@ You can set the target platforms by `-osarch` option:
 You can pass extra arguments to go build after double dash:
 
 ```
-% goxzst -- -ldflags "-X version=$VERSION"
+% goxzst -- -ldflags "-X main.version=$VERSION"
 ```
 
 You can render the templates by `-t` option:
