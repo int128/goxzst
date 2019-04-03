@@ -13,7 +13,17 @@ import (
 	"go.uber.org/dig"
 )
 
-const usage = `Crossbuild, zip, shasum for each GOOS/GOARCH and render templates.
+const usage = `A command for cross-build, zip, shasum for each GOOS/GOARCH and rendering templates.
+
+Examples:
+  To make cross-build, zip and sha256 for the default platforms:
+    %[1]s
+
+  You can set the target platforms:
+    %[1]s -osarch "linux_amd64 linux_arm"
+
+  You can pass extra arguments to go build:
+    %[1]s -- -ldflags "-X version=$VERSION"
 
 Usage:
   %[1]s [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-t "FILE ..."] [--] [build args]

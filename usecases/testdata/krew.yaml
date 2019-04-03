@@ -1,0 +1,30 @@
+apiVersion: krew.googlecontainertools.github.com/v1alpha2
+kind: Plugin
+metadata:
+  name: goxzst
+spec:
+  shortDescription: An example of kubectl plugin
+  description: An example of kubectl plugin
+  homepage: https://github.com/int128/goxzst
+  version: {{ env "VERSION" }}
+  platforms:
+    - uri: https://github.com/int128/goxzst/releases/download/{{ env "VERSION" }}/goxzst_linux_amd64.zip
+      sha256: {{ .linux_amd64_zip_sha256 }}
+      bin: goxzst
+      files:
+        - from: goxzst
+          to: .
+      selector:
+        matchLabels:
+          os: linux
+          arch: amd64
+    - uri: https://github.com/int128/goxzst/releases/download/{{ env "VERSION" }}/goxzst_darwin_amd64.zip
+      sha256: {{ .darwin_amd64_zip_sha256 }}
+      bin: goxzst
+      files:
+        - from: goxzst
+          to: .
+      selector:
+        matchLabels:
+          os: darwin
+          arch: amd64

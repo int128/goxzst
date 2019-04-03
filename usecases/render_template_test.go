@@ -33,7 +33,7 @@ func TestNewRenderTemplate(t *testing.T) {
 			Logger:     mock_adaptors.NewLogger(t),
 		}
 		if err := u.Do(usecases.RenderTemplateIn{
-			InputFilename:  "testdata/goxzst.rb",
+			InputFilename:  "testdata/homebrew.rb",
 			OutputFilename: "output",
 			Variables: map[string]string{
 				"darwin_amd64_zip_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
@@ -42,7 +42,7 @@ func TestNewRenderTemplate(t *testing.T) {
 			t.Errorf("Do returned error: %+v", err)
 		}
 
-		want, err := ioutil.ReadFile("testdata/goxzst.want.rb")
+		want, err := ioutil.ReadFile("testdata/homebrew.want.rb")
 		if err != nil {
 			t.Fatalf("could not read want: %s", err)
 		}
@@ -73,7 +73,7 @@ func TestNewRenderTemplate(t *testing.T) {
 			Logger:     mock_adaptors.NewLogger(t),
 		}
 		err := u.Do(usecases.RenderTemplateIn{
-			InputFilename:  "testdata/goxzst.rb",
+			InputFilename:  "testdata/homebrew.rb",
 			OutputFilename: "output",
 			Variables: map[string]string{
 				"darwin_amd64_zip_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",

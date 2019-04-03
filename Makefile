@@ -10,4 +10,4 @@ goxzst:
 	go build -o $@
 
 run: goxzst
-	./goxzst
+	VERSION=v1.0.0 ./goxzst -t "usecases/testdata/homebrew.rb usecases/testdata/krew.yaml"
