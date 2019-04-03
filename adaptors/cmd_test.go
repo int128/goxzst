@@ -34,7 +34,7 @@ func TestCmd_Run(t *testing.T) {
 			Logger: mock_adaptors.NewLogger(t),
 			Env:    newEnvMock(ctrl),
 		}
-		exitCode := cmd.Run([]string{"goxzst"})
+		exitCode := cmd.Run([]string{"goxzst"}, "version")
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}
@@ -57,7 +57,7 @@ func TestCmd_Run(t *testing.T) {
 			Logger: mock_adaptors.NewLogger(t),
 			Env:    newEnvMock(ctrl),
 		}
-		exitCode := cmd.Run([]string{"goxzst", "--", "-ldflags", "-X foo=bar"})
+		exitCode := cmd.Run([]string{"goxzst", "--", "-ldflags", "-X foo=bar"}, "version")
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}
@@ -82,7 +82,7 @@ func TestCmd_Run(t *testing.T) {
 			Logger: mock_adaptors.NewLogger(t),
 			Env:    newEnvMock(ctrl),
 		}
-		exitCode := cmd.Run([]string{"goxzst", "-osarch", "linux_arm"})
+		exitCode := cmd.Run([]string{"goxzst", "-osarch", "linux_arm"}, "version")
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}
@@ -106,7 +106,7 @@ func TestCmd_Run(t *testing.T) {
 			Logger: mock_adaptors.NewLogger(t),
 			Env:    newEnvMock(ctrl),
 		}
-		exitCode := cmd.Run([]string{"goxzst", "-i", "README.md LICENSE"})
+		exitCode := cmd.Run([]string{"goxzst", "-i", "README.md LICENSE"}, "version")
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}
@@ -130,7 +130,7 @@ func TestCmd_Run(t *testing.T) {
 			Logger: mock_adaptors.NewLogger(t),
 			Env:    newEnvMock(ctrl),
 		}
-		exitCode := cmd.Run([]string{"goxzst", "-t", "template1 template2"})
+		exitCode := cmd.Run([]string{"goxzst", "-t", "template1 template2"}, "version")
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}

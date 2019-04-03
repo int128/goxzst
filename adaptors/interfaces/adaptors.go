@@ -8,7 +8,7 @@ import (
 //go:generate mockgen -package mock_adaptors -destination ../mock_adaptors/mock_adaptors.go github.com/int128/goxzst/adaptors/interfaces Env,Filesystem
 
 type Cmd interface {
-	Run(args []string) int
+	Run(args []string, version string) int
 }
 
 type Logger interface {

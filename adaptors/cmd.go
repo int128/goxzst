@@ -13,7 +13,8 @@ import (
 	"go.uber.org/dig"
 )
 
-const usage = `A command for cross-build, zip, shasum for each GOOS/GOARCH and rendering templates.
+const usage = `%[1]s %[2]s
+A command for cross-build, zip, shasum for each GOOS/GOARCH and rendering templates.
 
 Examples:
   To make cross-build, zip and sha256 for the default platforms:
@@ -42,12 +43,12 @@ type Cmd struct {
 	Logger adaptors.Logger
 }
 
-func (cmd *Cmd) Run(args []string) int {
+func (cmd *Cmd) Run(args []string, version string) int {
 	wd, _ := cmd.Env.Getwd()
 	var o cmdOptions
 	f := flag.NewFlagSet(args[0], flag.ExitOnError)
 	f.Usage = func() {
-		_, _ = fmt.Fprintf(f.Output(), usage, f.Name())
+		_, _ = fmt.Fprintf(f.Output(), usage, f.Name(), version)
 		f.PrintDefaults()
 	}
 	f.StringVar(&o.outputDir, "d", "dist", "Output directory")
