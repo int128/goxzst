@@ -38,6 +38,7 @@ func TestArchive_Do(t *testing.T) {
 
 	u := Archive{
 		Filesystem: filesystem,
+		Logger:     mock_adaptors.NewLogger(t),
 	}
 	if err := u.Do(usecases.ArchiveIn{
 		OutputFilename: "output",

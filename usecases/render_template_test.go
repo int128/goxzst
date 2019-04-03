@@ -30,6 +30,7 @@ func TestNewRenderTemplate(t *testing.T) {
 		u := RenderTemplate{
 			Env:        env,
 			Filesystem: filesystem,
+			Logger:     mock_adaptors.NewLogger(t),
 		}
 		if err := u.Do(usecases.RenderTemplateIn{
 			InputFilename:  "testdata/goxzst.rb",
@@ -69,6 +70,7 @@ func TestNewRenderTemplate(t *testing.T) {
 		u := RenderTemplate{
 			Env:        env,
 			Filesystem: filesystem,
+			Logger:     mock_adaptors.NewLogger(t),
 		}
 		err := u.Do(usecases.RenderTemplateIn{
 			InputFilename:  "testdata/goxzst.rb",

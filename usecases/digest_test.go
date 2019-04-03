@@ -26,6 +26,7 @@ func TestDigest_Do(t *testing.T) {
 
 	u := Digest{
 		Filesystem: filesystem,
+		Logger:     mock_adaptors.NewLogger(t),
 	}
 	out, err := u.Do(usecases.DigestIn{
 		InputFilename:  "input1",

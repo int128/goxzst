@@ -18,9 +18,12 @@ func NewDigest(i Digest) usecases.Digest {
 type Digest struct {
 	dig.In
 	Filesystem adaptors.Filesystem
+	Logger     adaptors.Logger
 }
 
 func (u *Digest) Do(in usecases.DigestIn) (*usecases.DigestOut, error) {
+	u.Logger.Logf("Creating %s", in.OutputFilename)
+
 	input, err := u.Filesystem.Open(in.InputFilename)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error while opening the file %s", in.InputFilename)

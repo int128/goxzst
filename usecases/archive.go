@@ -17,9 +17,12 @@ func NewArchive(i Archive) usecases.Archive {
 type Archive struct {
 	dig.In
 	Filesystem adaptors.Filesystem
+	Logger     adaptors.Logger
 }
 
 func (u *Archive) Do(in usecases.ArchiveIn) error {
+	u.Logger.Logf("Creating %s", in.OutputFilename)
+
 	output, err := u.Filesystem.Create(in.OutputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while creating the file %s", in.OutputFilename)

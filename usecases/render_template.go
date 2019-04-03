@@ -18,9 +18,12 @@ type RenderTemplate struct {
 	dig.In
 	Env        adaptors.Env
 	Filesystem adaptors.Filesystem
+	Logger     adaptors.Logger
 }
 
 func (u *RenderTemplate) Do(in usecases.RenderTemplateIn) error {
+	u.Logger.Logf("Creating %s from the template %s", in.OutputFilename, in.InputFilename)
+
 	tpl, err := template.New(filepath.Base(in.InputFilename)).
 		Funcs(template.FuncMap{
 			"env": u.env,
