@@ -1,4 +1,4 @@
-.PHONY: all check run
+.PHONY: all check run release clean
 
 all: goxzst
 
@@ -15,3 +15,11 @@ run: goxzst
 	zipinfo dist/example_linux_amd64.zip
 	zipinfo dist/example_darwin_amd64.zip
 	zipinfo dist/example_windows_amd64.zip
+
+release: goxzst
+	-rm -r dist/
+	./goxzst -o goxzst -- -ldflags "-X main.version=$(CIRCLE_TAG)"
+	ghr -u "$(CIRCLE_PROJECT_USERNAME)" -r "$(CIRCLE_PROJECT_REPONAME)" "$(CIRCLE_TAG)" dist
+
+clean:
+	-rm -r dist/

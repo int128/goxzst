@@ -4,15 +4,21 @@ jobs:
     docker:
       - image: circleci/golang:1.11.2
     steps:
+      - run: go get github.com/tcnksm/ghr
       - checkout
       - run: make check
       - run: make run
+      - run: |
+          if [ "$CIRCLE_TAG" ]; then
+            make release
+          fi
 
 workflows:
   version: 2
   all:
     jobs:
       - build:
+          context: github-token
           filters:
             tags:
               only: /.*/
