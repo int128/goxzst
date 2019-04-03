@@ -47,18 +47,6 @@ func (mr *MockEnvMockRecorder) Exec(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exec", reflect.TypeOf((*MockEnv)(nil).Exec), arg0)
 }
 
-// Getenv mocks base method
-func (m *MockEnv) Getenv(arg0 string) string {
-	ret := m.ctrl.Call(m, "Getenv", arg0)
-	ret0, _ := ret[0].(string)
-	return ret0
-}
-
-// Getenv indicates an expected call of Getenv
-func (mr *MockEnvMockRecorder) Getenv(arg0 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Getenv", reflect.TypeOf((*MockEnv)(nil).Getenv), arg0)
-}
-
 // Getwd mocks base method
 func (m *MockEnv) Getwd() (string, error) {
 	ret := m.ctrl.Call(m, "Getwd")
@@ -70,6 +58,19 @@ func (m *MockEnv) Getwd() (string, error) {
 // Getwd indicates an expected call of Getwd
 func (mr *MockEnvMockRecorder) Getwd() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Getwd", reflect.TypeOf((*MockEnv)(nil).Getwd))
+}
+
+// LookupEnv mocks base method
+func (m *MockEnv) LookupEnv(arg0 string) (string, bool) {
+	ret := m.ctrl.Call(m, "LookupEnv", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// LookupEnv indicates an expected call of LookupEnv
+func (mr *MockEnvMockRecorder) LookupEnv(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LookupEnv", reflect.TypeOf((*MockEnv)(nil).LookupEnv), arg0)
 }
 
 // MockFilesystem is a mock of Filesystem interface

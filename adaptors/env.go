@@ -22,8 +22,8 @@ func (*Env) Getwd() (string, error) {
 	return dir, nil
 }
 
-func (*Env) Getenv(key string) string {
-	return os.Getenv(key)
+func (*Env) LookupEnv(key string) (string, bool) {
+	return os.LookupEnv(key)
 }
 
 // Exec runs and waits for a process.

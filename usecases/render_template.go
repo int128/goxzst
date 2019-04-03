@@ -22,11 +22,8 @@ type RenderTemplate struct {
 
 func (u *RenderTemplate) Do(in usecases.RenderTemplateIn) error {
 	tpl, err := template.New(filepath.Base(in.InputFilename)).
-		Option("missingkey=zero").
 		Funcs(template.FuncMap{
-			"env": func(key string) string {
-				return u.Env.Getenv(key)
-			},
+			"env": u.env,
 		}).
 		ParseFiles(in.InputFilename)
 	if err != nil {
@@ -43,4 +40,12 @@ func (u *RenderTemplate) Do(in usecases.RenderTemplateIn) error {
 		return errors.Wrapf(err, "error while rendering the template %s", in.InputFilename)
 	}
 	return nil
+}
+
+func (u *RenderTemplate) env(key string) (string, error) {
+	value, ok := u.Env.LookupEnv(key)
+	if !ok {
+		return "", errors.Errorf("no such environment variable %s", key)
+	}
+	return value, nil
 }
