@@ -18,7 +18,7 @@ workflows:
   all:
     jobs:
       - build:
-          context: github-token
+          context: open-source
           filters:
             tags:
               only: /.*/
