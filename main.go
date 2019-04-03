@@ -8,7 +8,7 @@ import (
 	"github.com/int128/goxzst/di"
 )
 
-var version = "v0.0.0"
+var version = "HEAD"
 
 func main() {
 	if err := di.Invoke(func(cmd adaptors.Cmd) {
