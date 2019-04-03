@@ -9,11 +9,12 @@ type Make interface {
 }
 
 type MakeIn struct {
-	OutputDir         string // optional
-	OutputName        string
-	Platforms         []build.Platform
-	GoBuildArgs       []string
-	TemplateFilenames []string
+	OutputDir             string // optional
+	OutputName            string
+	Platforms             []build.Platform
+	GoBuildArgs           []string
+	ArchiveExtraFilenames []string
+	TemplateFilenames     []string
 }
 
 type CrossBuild interface {

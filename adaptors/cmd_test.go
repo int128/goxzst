@@ -88,6 +88,30 @@ func TestCmd_Run(t *testing.T) {
 		}
 	})
 
+	t.Run("WithExtraFilesToZip", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		makeUseCase := mock_usecases.NewMockMake(ctrl)
+		makeUseCase.EXPECT().
+			Do(usecases.MakeIn{
+				OutputDir:             "dist",
+				OutputName:            "package",
+				Platforms:             defaultPlatforms,
+				GoBuildArgs:           []string{},
+				ArchiveExtraFilenames: []string{"README.md", "LICENSE"},
+			})
+
+		cmd := Cmd{
+			Make:   makeUseCase,
+			Logger: mock_adaptors.NewLogger(t),
+			Env:    newEnvMock(ctrl),
+		}
+		exitCode := cmd.Run([]string{"goxzst", "-i", "README.md LICENSE"})
+		if exitCode != 0 {
+			t.Errorf("exitCode wants 0 but %d", exitCode)
+		}
+	})
+
 	t.Run("WithTemplates", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()

@@ -26,7 +26,7 @@ Examples:
     %[1]s -- -ldflags "-X version=$VERSION"
 
 Usage:
-  %[1]s [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-t "FILE ..."] [--] [build args]
+  %[1]s [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-t "FILE ..."] [--] [build args]
 
 Options:
 `
@@ -53,6 +53,7 @@ func (cmd *Cmd) Run(args []string) int {
 	f.StringVar(&o.outputDir, "d", "dist", "Output directory")
 	f.StringVar(&o.outputName, "o", filepath.Base(wd), "Output name")
 	f.StringVar(&o.osarch, "osarch", "linux_amd64 darwin_amd64 windows_amd64", "List of GOOS_GOARCH separated by space")
+	f.StringVar(&o.archiveExtraFilenames, "i", "", "List of extra files to add to the zip, separated by space")
 	f.StringVar(&o.templateFilenames, "t", "", "List of template files separated by space")
 	if err := f.Parse(args[1:]); err != nil {
 		return 1
@@ -64,11 +65,12 @@ func (cmd *Cmd) Run(args []string) int {
 	}
 
 	in := usecases.MakeIn{
-		OutputDir:         o.outputDir,
-		OutputName:        o.outputName,
-		Platforms:         platforms,
-		GoBuildArgs:       f.Args(),
-		TemplateFilenames: o.templateFilenameList(),
+		OutputDir:             o.outputDir,
+		OutputName:            o.outputName,
+		Platforms:             platforms,
+		GoBuildArgs:           f.Args(),
+		ArchiveExtraFilenames: o.archiveExtraFilenameList(),
+		TemplateFilenames:     o.templateFilenameList(),
 	}
 	if err := cmd.Make.Do(in); err != nil {
 		cmd.Logger.Logf("Error: %s", err)
@@ -78,10 +80,11 @@ func (cmd *Cmd) Run(args []string) int {
 }
 
 type cmdOptions struct {
-	outputDir         string
-	outputName        string
-	osarch            string
-	templateFilenames string
+	outputDir             string
+	outputName            string
+	osarch                string
+	archiveExtraFilenames string
+	templateFilenames     string
 }
 
 func (o *cmdOptions) platformList() ([]build.Platform, error) {
@@ -97,6 +100,13 @@ func (o *cmdOptions) platformList() ([]build.Platform, error) {
 		})
 	}
 	return platforms, nil
+}
+
+func (o *cmdOptions) archiveExtraFilenameList() []string {
+	if o.archiveExtraFilenames == "" {
+		return nil
+	}
+	return strings.Split(o.archiveExtraFilenames, " ")
 }
 
 func (o *cmdOptions) templateFilenameList() []string {

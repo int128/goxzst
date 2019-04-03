@@ -47,14 +47,19 @@ func (u *Make) Do(in usecases.MakeIn) error {
 			return errors.Wrapf(err, "error while cross build")
 		}
 
+		archiveEntries := []usecases.ArchiveEntry{{
+			Path:          in.OutputName,
+			InputFilename: executableFilename,
+		}}
+		for _, zipExtraFilename := range in.ArchiveExtraFilenames {
+			archiveEntries = append(archiveEntries, usecases.ArchiveEntry{
+				Path:          zipExtraFilename,
+				InputFilename: zipExtraFilename,
+			})
+		}
 		if err := u.Archive.Do(usecases.ArchiveIn{
 			OutputFilename: zipFilename,
-			Entries: []usecases.ArchiveEntry{
-				{
-					Path:          in.OutputName,
-					InputFilename: executableFilename,
-				},
-			},
+			Entries:        archiveEntries,
 		}); err != nil {
 			return errors.Wrapf(err, "error while creating zip")
 		}

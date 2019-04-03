@@ -80,6 +80,7 @@ func TestMake_Do(t *testing.T) {
 				OutputFilename: "dir/output_linux_amd64.zip",
 				Entries: []usecases.ArchiveEntry{
 					{Path: "output", InputFilename: "dir/output_linux_amd64"},
+					{Path: "LICENSE", InputFilename: "LICENSE"},
 				},
 			})
 		digest := mock_usecases.NewMockDigest(ctrl)
@@ -113,8 +114,9 @@ func TestMake_Do(t *testing.T) {
 			Platforms: []build.Platform{
 				{GOOS: "linux", GOARCH: "amd64"},
 			},
-			GoBuildArgs:       []string{"-ldflags", "-X foo=bar"},
-			TemplateFilenames: []string{"template1"},
+			GoBuildArgs:           []string{"-ldflags", "-X foo=bar"},
+			ArchiveExtraFilenames: []string{"LICENSE"},
+			TemplateFilenames:     []string{"template1"},
 		}); err != nil {
 			t.Errorf("Do returned error: %+v", err)
 		}

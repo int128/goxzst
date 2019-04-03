@@ -69,11 +69,13 @@ You can set the following options:
 
 ```
 Usage:
-  goxzst [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-t "FILE ..."] [--] [build args]
+  goxzst [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-t "FILE ..."] [--] [build args]
 
 Options:
   -d string
     	Output directory (default "dist")
+  -i string
+    	List of extra files to add to the zip, separated by space
   -o string
     	Output name (default "goxzst")
   -osarch string
