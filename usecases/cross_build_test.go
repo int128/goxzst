@@ -29,7 +29,7 @@ func TestCrossBuild_Do(t *testing.T) {
 		if err := u.Do(usecases.CrossBuildIn{
 			OutputFilename: "output",
 			GoBuildArgs:    nil,
-			Target:         build.Target{GOOS: "linux", GOARCH: "amd64"},
+			Platform:       build.Platform{GOOS: "linux", GOARCH: "amd64"},
 		}); err != nil {
 			t.Fatalf("Do returned error: %+v", err)
 		}
@@ -53,7 +53,7 @@ func TestCrossBuild_Do(t *testing.T) {
 		if err := u.Do(usecases.CrossBuildIn{
 			OutputFilename: "output",
 			GoBuildArgs:    []string{"-ldflags", "-X foo=bar"},
-			Target:         build.Target{GOOS: "linux", GOARCH: "amd64"},
+			Platform:       build.Platform{GOOS: "linux", GOARCH: "amd64"},
 		}); err != nil {
 			t.Fatalf("Do returned error: %+v", err)
 		}

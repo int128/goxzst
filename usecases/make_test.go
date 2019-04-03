@@ -19,7 +19,7 @@ func TestMake_Do(t *testing.T) {
 		crossBuild.EXPECT().
 			Do(usecases.CrossBuildIn{
 				OutputFilename: "output_linux_amd64",
-				Target:         build.Target{GOOS: "linux", GOARCH: "amd64"},
+				Platform:       build.Platform{GOOS: "linux", GOARCH: "amd64"},
 			})
 		createZip := mock_usecases.NewMockCreateZip(ctrl)
 		createZip.EXPECT().
@@ -46,7 +46,7 @@ func TestMake_Do(t *testing.T) {
 		}
 		if err := u.Do(usecases.MakeIn{
 			OutputName: "output",
-			Targets:    []build.Target{{GOOS: "linux", GOARCH: "amd64"}},
+			Platforms:  []build.Platform{{GOOS: "linux", GOARCH: "amd64"}},
 		}); err != nil {
 			t.Errorf("Do returned error: %+v", err)
 		}
@@ -64,7 +64,7 @@ func TestMake_Do(t *testing.T) {
 		crossBuild.EXPECT().
 			Do(usecases.CrossBuildIn{
 				OutputFilename: "dir/output_linux_amd64",
-				Target:         build.Target{GOOS: "linux", GOARCH: "amd64"},
+				Platform:       build.Platform{GOOS: "linux", GOARCH: "amd64"},
 				GoBuildArgs:    []string{"-ldflags", "-X foo=bar"},
 			})
 		createZip := mock_usecases.NewMockCreateZip(ctrl)
@@ -102,7 +102,7 @@ func TestMake_Do(t *testing.T) {
 		if err := u.Do(usecases.MakeIn{
 			OutputDir:  "dir",
 			OutputName: "output",
-			Targets: []build.Target{
+			Platforms: []build.Platform{
 				{GOOS: "linux", GOARCH: "amd64"},
 			},
 			GoBuildArgs:       []string{"-ldflags", "-X foo=bar"},

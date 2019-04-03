@@ -23,8 +23,8 @@ type CrossBuild struct {
 func (u *CrossBuild) Do(in usecases.CrossBuildIn) error {
 	args := append([]string{"build", "-o", in.OutputFilename}, in.GoBuildArgs...)
 	env := []string{
-		fmt.Sprintf("GOOS=%s", in.Target.GOOS),
-		fmt.Sprintf("GOARCH=%s", in.Target.GOARCH),
+		fmt.Sprintf("GOOS=%s", in.Platform.GOOS),
+		fmt.Sprintf("GOARCH=%s", in.Platform.GOARCH),
 	}
 
 	u.Logger.Logf("%s go %s", strings.Join(env, " "), strings.Join(args, " "))

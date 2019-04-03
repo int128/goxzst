@@ -47,7 +47,7 @@ func (cmd *Cmd) Run(args []string) int {
 	if err := f.Parse(args[1:]); err != nil {
 		return 1
 	}
-	targets, err := o.targetList()
+	platforms, err := o.platformList()
 	if err != nil {
 		cmd.Logger.Logf("Invalid arguments: %s", err)
 		return 1
@@ -56,7 +56,7 @@ func (cmd *Cmd) Run(args []string) int {
 	in := usecases.MakeIn{
 		OutputDir:         o.outputDir,
 		OutputName:        o.outputName,
-		Targets:           targets,
+		Platforms:         platforms,
 		GoBuildArgs:       f.Args(),
 		TemplateFilenames: o.templateFilenameList(),
 	}
@@ -74,19 +74,19 @@ type cmdOptions struct {
 	templateFilenames string
 }
 
-func (o *cmdOptions) targetList() ([]build.Target, error) {
-	var targets []build.Target
+func (o *cmdOptions) platformList() ([]build.Platform, error) {
+	var platforms []build.Platform
 	for _, s := range strings.Split(o.osarch, " ") {
 		p := strings.SplitN(s, "_", 2)
 		if len(p) != 2 {
 			return nil, errors.Errorf("osarch must be GOOS_GOARCH but was %s", s)
 		}
-		targets = append(targets, build.Target{
+		platforms = append(platforms, build.Platform{
 			GOOS:   build.GOOS(p[0]),
 			GOARCH: build.GOARCH(p[1]),
 		})
 	}
-	return targets, nil
+	return platforms, nil
 }
 
 func (o *cmdOptions) templateFilenameList() []string {

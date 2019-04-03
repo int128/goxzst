@@ -31,16 +31,16 @@ func (u *Make) Do(in usecases.MakeIn) error {
 	}
 
 	templateVariables := make(map[string]string)
-	for _, target := range in.Targets {
+	for _, platform := range in.Platforms {
 		executableFilename := filepath.Join(in.OutputDir,
-			fmt.Sprintf("%s_%s_%s", in.OutputName, target.GOOS, target.GOARCH))
+			fmt.Sprintf("%s_%s_%s", in.OutputName, platform.GOOS, platform.GOARCH))
 		zipFilename := executableFilename + ".zip"
 		shaFilename := executableFilename + ".zip.sha256"
 
 		if err := u.CrossBuild.Do(usecases.CrossBuildIn{
 			OutputFilename: executableFilename,
 			GoBuildArgs:    in.GoBuildArgs,
-			Target:         target,
+			Platform:       platform,
 		}); err != nil {
 			return errors.Wrapf(err, "error while cross build")
 		}
@@ -65,7 +65,7 @@ func (u *Make) Do(in usecases.MakeIn) error {
 			return errors.Wrapf(err, "error while creating digest")
 		}
 
-		templateVariables[fmt.Sprintf("%s_%s_zip_sha256", target.GOOS, target.GOARCH)] = shaOut.SHA256
+		templateVariables[fmt.Sprintf("%s_%s_zip_sha256", platform.GOOS, platform.GOARCH)] = shaOut.SHA256
 	}
 
 	for _, t := range in.TemplateFilenames {

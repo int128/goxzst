@@ -11,7 +11,7 @@ import (
 )
 
 func TestCmd_Run(t *testing.T) {
-	defaultTargets := []build.Target{
+	defaultPlatforms := []build.Platform{
 		{GOOS: "linux", GOARCH: "amd64"},
 		{GOOS: "darwin", GOARCH: "amd64"},
 		{GOOS: "windows", GOARCH: "amd64"},
@@ -25,7 +25,7 @@ func TestCmd_Run(t *testing.T) {
 			Do(usecases.MakeIn{
 				OutputDir:   "dist",
 				OutputName:  "package",
-				Targets:     defaultTargets,
+				Platforms:   defaultPlatforms,
 				GoBuildArgs: []string{},
 			})
 
@@ -48,7 +48,7 @@ func TestCmd_Run(t *testing.T) {
 			Do(usecases.MakeIn{
 				OutputDir:   "dist",
 				OutputName:  "package",
-				Targets:     defaultTargets,
+				Platforms:   defaultPlatforms,
 				GoBuildArgs: []string{"-ldflags", "-X foo=bar"},
 			})
 
@@ -63,7 +63,7 @@ func TestCmd_Run(t *testing.T) {
 		}
 	})
 
-	t.Run("WithTargets", func(t *testing.T) {
+	t.Run("WithPlatforms", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		makeUseCase := mock_usecases.NewMockMake(ctrl)
@@ -71,7 +71,7 @@ func TestCmd_Run(t *testing.T) {
 			Do(usecases.MakeIn{
 				OutputDir:  "dist",
 				OutputName: "package",
-				Targets: []build.Target{
+				Platforms: []build.Platform{
 					{GOOS: "linux", GOARCH: "arm"},
 				},
 				GoBuildArgs: []string{},
@@ -96,7 +96,7 @@ func TestCmd_Run(t *testing.T) {
 			Do(usecases.MakeIn{
 				OutputDir:         "dist",
 				OutputName:        "package",
-				Targets:           defaultTargets,
+				Platforms:         defaultPlatforms,
 				GoBuildArgs:       []string{},
 				TemplateFilenames: []string{"template1", "template2"},
 			})

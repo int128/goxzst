@@ -11,7 +11,7 @@ type Make interface {
 type MakeIn struct {
 	OutputDir         string // optional
 	OutputName        string
-	Targets           []build.Target
+	Platforms         []build.Platform
 	GoBuildArgs       []string
 	TemplateFilenames []string
 }
@@ -23,7 +23,7 @@ type CrossBuild interface {
 type CrossBuildIn struct {
 	OutputFilename string
 	GoBuildArgs    []string
-	Target         build.Target
+	Platform       build.Platform
 }
 
 type CreateZip interface {
