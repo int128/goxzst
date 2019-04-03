@@ -37,12 +37,17 @@ func TestMake_Do(t *testing.T) {
 			}).
 			Return(&usecases.DigestOut{SHA256: "sha256"}, nil)
 
+		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
+		filesystem.EXPECT().
+			Remove("output_linux_amd64")
+
 		u := Make{
 			CrossBuild:     crossBuild,
 			Archive:        archive,
 			Digest:         digest,
 			RenderTemplate: mock_usecases.NewMockRenderTemplate(ctrl),
-			Filesystem:     mock_adaptors.NewMockFilesystem(ctrl),
+			Filesystem:     filesystem,
+			Logger:         mock_adaptors.NewLogger(t),
 		}
 		if err := u.Do(usecases.MakeIn{
 			OutputName: "output",
@@ -59,6 +64,8 @@ func TestMake_Do(t *testing.T) {
 		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 		filesystem.EXPECT().
 			MkdirAll("dir")
+		filesystem.EXPECT().
+			Remove("dir/output_linux_amd64")
 
 		crossBuild := mock_usecases.NewMockCrossBuild(ctrl)
 		crossBuild.EXPECT().
@@ -98,6 +105,7 @@ func TestMake_Do(t *testing.T) {
 			Digest:         digest,
 			RenderTemplate: renderTemplate,
 			Filesystem:     filesystem,
+			Logger:         mock_adaptors.NewLogger(t),
 		}
 		if err := u.Do(usecases.MakeIn{
 			OutputDir:  "dir",

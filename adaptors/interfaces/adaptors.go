@@ -30,6 +30,7 @@ type ExecIn struct {
 type Filesystem interface {
 	Open(name string) (io.ReadCloser, error)
 	Create(name string) (io.WriteCloser, error)
+	Remove(name string) error
 	GetMode(name string) (os.FileMode, error)
 	MkdirAll(path string) error
 }

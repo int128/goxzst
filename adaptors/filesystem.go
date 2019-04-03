@@ -30,6 +30,13 @@ func (*Filesystem) Create(name string) (io.WriteCloser, error) {
 	return f, nil
 }
 
+func (*Filesystem) Remove(name string) error {
+	if err := os.Remove(name); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
 func (*Filesystem) GetMode(name string) (os.FileMode, error) {
 	s, err := os.Stat(name)
 	if err != nil {

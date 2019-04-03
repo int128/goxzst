@@ -146,3 +146,15 @@ func (m *MockFilesystem) Open(arg0 string) (io.ReadCloser, error) {
 func (mr *MockFilesystemMockRecorder) Open(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Open", reflect.TypeOf((*MockFilesystem)(nil).Open), arg0)
 }
+
+// Remove mocks base method
+func (m *MockFilesystem) Remove(arg0 string) error {
+	ret := m.ctrl.Call(m, "Remove", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Remove indicates an expected call of Remove
+func (mr *MockFilesystemMockRecorder) Remove(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockFilesystem)(nil).Remove), arg0)
+}

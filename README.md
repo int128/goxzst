@@ -16,15 +16,18 @@ To make cross-build, zip and sha256 for the default platforms:
 
 ```
 % goxzst
-2019/04/03 12:55:05 GOOS=linux GOARCH=amd64 go build -o dist/goxzst_linux_amd64
-2019/04/03 12:55:05 Creating dist/goxzst_linux_amd64.zip
-2019/04/03 12:55:06 Creating dist/goxzst_linux_amd64.zip.sha256
-2019/04/03 12:55:06 GOOS=darwin GOARCH=amd64 go build -o dist/goxzst_darwin_amd64
-2019/04/03 12:55:06 Creating dist/goxzst_darwin_amd64.zip
-2019/04/03 12:55:06 Creating dist/goxzst_darwin_amd64.zip.sha256
-2019/04/03 12:55:06 GOOS=windows GOARCH=amd64 go build -o dist/goxzst_windows_amd64
-2019/04/03 12:55:06 Creating dist/goxzst_windows_amd64.zip
-2019/04/03 12:55:07 Creating dist/goxzst_windows_amd64.zip.sha256
+2019/04/03 13:40:44 GOOS=linux GOARCH=amd64 go build -o dist/goxzst_linux_amd64
+2019/04/03 13:40:45 Creating dist/goxzst_linux_amd64.zip
+2019/04/03 13:40:45 Creating dist/goxzst_linux_amd64.zip.sha256
+2019/04/03 13:40:45 GOOS=darwin GOARCH=amd64 go build -o dist/goxzst_darwin_amd64
+2019/04/03 13:40:45 Creating dist/goxzst_darwin_amd64.zip
+2019/04/03 13:40:45 Creating dist/goxzst_darwin_amd64.zip.sha256
+2019/04/03 13:40:45 GOOS=windows GOARCH=amd64 go build -o dist/goxzst_windows_amd64
+2019/04/03 13:40:46 Creating dist/goxzst_windows_amd64.zip
+2019/04/03 13:40:46 Creating dist/goxzst_windows_amd64.zip.sha256
+2019/04/03 13:40:46 Removing dist/goxzst_linux_amd64
+2019/04/03 13:40:46 Removing dist/goxzst_darwin_amd64
+2019/04/03 13:40:46 Removing dist/goxzst_windows_amd64
 ```
 
 You can set the target platforms by `-osarch` option:
@@ -55,10 +58,10 @@ goxzst performs the following operations for each platform:
 1. Generate SHA-256 digest of the zip file.
 
 and optionally generates files from the templates.
+It removes the executable files.
 
 Finally, the following files will be created:
 
-- `DIR/NAME_GOOS_GOARCH`: executable
 - `DIR/NAME_GOOS_GOARCH.zip`: archive
 - `DIR/NAME_GOOS_GOARCH.zip.sha256`: digest
 

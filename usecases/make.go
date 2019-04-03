@@ -21,6 +21,7 @@ type Make struct {
 	Digest         usecases.Digest
 	RenderTemplate usecases.RenderTemplate
 	Filesystem     adaptors.Filesystem
+	Logger         adaptors.Logger
 }
 
 func (u *Make) Do(in usecases.MakeIn) error {
@@ -30,6 +31,7 @@ func (u *Make) Do(in usecases.MakeIn) error {
 		}
 	}
 
+	var executableFilenames []string
 	templateVariables := make(map[string]string)
 	for _, platform := range in.Platforms {
 		executableFilename := filepath.Join(in.OutputDir,
@@ -65,6 +67,7 @@ func (u *Make) Do(in usecases.MakeIn) error {
 			return errors.Wrapf(err, "error while creating digest")
 		}
 
+		executableFilenames = append(executableFilenames, executableFilename)
 		templateVariables[fmt.Sprintf("%s_%s_zip_sha256", platform.GOOS, platform.GOARCH)] = out.SHA256
 	}
 
@@ -75,6 +78,13 @@ func (u *Make) Do(in usecases.MakeIn) error {
 			Variables:      templateVariables,
 		}); err != nil {
 			return errors.Wrapf(err, "error while rendering templates")
+		}
+	}
+
+	for _, executableFilename := range executableFilenames {
+		u.Logger.Logf("Removing %s", executableFilename)
+		if err := u.Filesystem.Remove(executableFilename); err != nil {
+			return errors.Wrapf(err, "error while removing %s", executableFilename)
 		}
 	}
 	return nil
