@@ -1,7 +1,6 @@
 package usecases
 
 import (
-	"bytes"
 	"io/ioutil"
 	"strings"
 	"testing"
@@ -15,13 +14,13 @@ func TestDigest_Do(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	var b bytes.Buffer
+	var b mock_adaptors.WriteBuffer
 	filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 	filesystem.EXPECT().
 		MkdirAll("dist")
 	filesystem.EXPECT().
 		Create("dist/output").
-		Return(&nopWriteCloser{&b}, nil)
+		Return(&b, nil)
 	filesystem.EXPECT().
 		Open("input1").
 		Return(ioutil.NopCloser(strings.NewReader("text1")), nil)

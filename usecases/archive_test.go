@@ -3,7 +3,6 @@ package usecases
 import (
 	"archive/zip"
 	"bytes"
-	"io"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -16,31 +15,34 @@ import (
 )
 
 func TestArchive_Do(t *testing.T) {
+	fileInfo1 := mock_adaptors.FileInfo{
+		ModeValue:    0644,
+		ModTimeValue: time.Date(2019, 4, 1, 2, 3, 4, 0, time.UTC),
+	}
+	fileInfo2 := mock_adaptors.FileInfo{
+		ModeValue:    0755,
+		ModTimeValue: time.Date(2019, 4, 9, 8, 7, 6, 0, time.UTC),
+	}
+
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	var zipBuffer bytes.Buffer
+	var b mock_adaptors.WriteBuffer
 	filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 	filesystem.EXPECT().
 		MkdirAll("dist")
 	filesystem.EXPECT().
 		Create("dist/output").
-		Return(&nopWriteCloser{&zipBuffer}, nil)
+		Return(&b, nil)
 	filesystem.EXPECT().
 		Stat("input1").
-		Return(&mock_adaptors.FileInfo{
-			ModeValue:    0644,
-			ModTimeValue: time.Date(2019, 4, 1, 2, 3, 4, 0, time.UTC),
-		}, nil)
+		Return(&fileInfo1, nil)
 	filesystem.EXPECT().
 		Open("input1").
 		Return(ioutil.NopCloser(strings.NewReader("text1")), nil)
 	filesystem.EXPECT().
 		Stat("input2").
-		Return(&mock_adaptors.FileInfo{
-			ModeValue:    0755,
-			ModTimeValue: time.Date(2019, 4, 9, 8, 7, 6, 0, time.UTC),
-		}, nil)
+		Return(&fileInfo2, nil)
 	filesystem.EXPECT().
 		Open("input2").
 		Return(ioutil.NopCloser(strings.NewReader("text2")), nil)
@@ -64,21 +66,15 @@ func TestArchive_Do(t *testing.T) {
 		t.Errorf("Do returned error: %+v", err)
 	}
 
-	r, err := zip.NewReader(bytes.NewReader(zipBuffer.Bytes()), int64(zipBuffer.Len()))
+	r, err := zip.NewReader(bytes.NewReader(b.Bytes()), int64(b.Len()))
 	if err != nil {
 		t.Fatalf("error while reading created zip: %s", err)
 	}
 	if len(r.File) != 2 {
 		t.Errorf("len wants 2 but %d", len(r.File))
 	}
-	assertZipEntry(t, r.File[0], "entry1", []byte("text1"), &mock_adaptors.FileInfo{
-		ModeValue:    0644,
-		ModTimeValue: time.Date(2019, 4, 1, 2, 3, 4, 0, time.UTC),
-	})
-	assertZipEntry(t, r.File[1], "entry2", []byte("text2"), &mock_adaptors.FileInfo{
-		ModeValue:    0755,
-		ModTimeValue: time.Date(2019, 4, 9, 8, 7, 6, 0, time.UTC),
-	})
+	assertZipEntry(t, r.File[0], "entry1", []byte("text1"), &fileInfo1)
+	assertZipEntry(t, r.File[1], "entry2", []byte("text2"), &fileInfo2)
 }
 
 func assertZipEntry(t *testing.T, f *zip.File, name string, content []byte, fileInfo os.FileInfo) {
@@ -105,12 +101,4 @@ func assertZipEntry(t *testing.T, f *zip.File, name string, content []byte, file
 	if bytes.Compare(c, content) != 0 {
 		t.Errorf("content wants %v but %v", content, c)
 	}
-}
-
-type nopWriteCloser struct {
-	io.Writer
-}
-
-func (*nopWriteCloser) Close() error {
-	return nil
 }

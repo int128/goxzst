@@ -21,13 +21,13 @@ func TestNewRenderTemplate(t *testing.T) {
 			Return("v1.0.0", true).
 			AnyTimes()
 
-		var b bytes.Buffer
+		var b mock_adaptors.WriteBuffer
 		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 		filesystem.EXPECT().
 			MkdirAll("dist")
 		filesystem.EXPECT().
 			Create("dist/output").
-			Return(&nopWriteCloser{&b}, nil)
+			Return(&b, nil)
 
 		u := RenderTemplate{
 			Env:        env,
@@ -63,13 +63,13 @@ func TestNewRenderTemplate(t *testing.T) {
 			Return("", false).
 			AnyTimes()
 
-		var b bytes.Buffer
+		var b mock_adaptors.WriteBuffer
 		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 		filesystem.EXPECT().
 			MkdirAll("dist")
 		filesystem.EXPECT().
 			Create("dist/output").
-			Return(&nopWriteCloser{&b}, nil)
+			Return(&b, nil)
 
 		u := RenderTemplate{
 			Env:        env,

@@ -1,9 +1,21 @@
 package mock_adaptors
 
 import (
+	"bytes"
+	"io"
 	"os"
 	"time"
 )
+
+type WriteBuffer struct {
+	bytes.Buffer
+}
+
+func (*WriteBuffer) Close() error {
+	return nil
+}
+
+var _ io.WriteCloser = &WriteBuffer{}
 
 type FileInfo struct {
 	ModeValue    os.FileMode
