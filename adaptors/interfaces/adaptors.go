@@ -16,7 +16,6 @@ type Logger interface {
 }
 
 type Env interface {
-	Getwd() (string, error)
 	LookupEnv(key string) (string, bool)
 	Exec(in ExecIn) error
 }

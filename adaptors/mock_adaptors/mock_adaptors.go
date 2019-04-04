@@ -47,19 +47,6 @@ func (mr *MockEnvMockRecorder) Exec(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exec", reflect.TypeOf((*MockEnv)(nil).Exec), arg0)
 }
 
-// Getwd mocks base method
-func (m *MockEnv) Getwd() (string, error) {
-	ret := m.ctrl.Call(m, "Getwd")
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Getwd indicates an expected call of Getwd
-func (mr *MockEnvMockRecorder) Getwd() *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Getwd", reflect.TypeOf((*MockEnv)(nil).Getwd))
-}
-
 // LookupEnv mocks base method
 func (m *MockEnv) LookupEnv(arg0 string) (string, bool) {
 	ret := m.ctrl.Call(m, "LookupEnv", arg0)

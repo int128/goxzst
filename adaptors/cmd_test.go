@@ -11,20 +11,35 @@ import (
 )
 
 func TestCmd_Run(t *testing.T) {
+	const version = "dummyVersionString"
 	defaultPlatforms := []build.Platform{
 		{GOOS: "linux", GOARCH: "amd64"},
 		{GOOS: "darwin", GOARCH: "amd64"},
 		{GOOS: "windows", GOARCH: "amd64"},
 	}
 
-	t.Run("NoArgs", func(t *testing.T) {
+	t.Run("NoArg", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		cmd := Cmd{
+			Make:   mock_usecases.NewMockMake(ctrl),
+			Logger: mock_adaptors.NewLogger(t),
+			Env:    mock_adaptors.NewMockEnv(ctrl),
+		}
+		exitCode := cmd.Run([]string{"goxzst"}, version)
+		if exitCode != 1 {
+			t.Errorf("exitCode wants 1 but %d", exitCode)
+		}
+	})
+
+	t.Run("MinimumArgs", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		makeUseCase := mock_usecases.NewMockMake(ctrl)
 		makeUseCase.EXPECT().
 			Do(usecases.MakeIn{
 				OutputDir:   "dist",
-				OutputName:  "package",
+				OutputName:  "hello",
 				Platforms:   defaultPlatforms,
 				GoBuildArgs: []string{},
 			})
@@ -32,9 +47,9 @@ func TestCmd_Run(t *testing.T) {
 		cmd := Cmd{
 			Make:   makeUseCase,
 			Logger: mock_adaptors.NewLogger(t),
-			Env:    newEnvMock(ctrl),
+			Env:    mock_adaptors.NewMockEnv(ctrl),
 		}
-		exitCode := cmd.Run([]string{"goxzst"}, "version")
+		exitCode := cmd.Run([]string{"goxzst", "-o", "hello"}, version)
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}
@@ -47,7 +62,7 @@ func TestCmd_Run(t *testing.T) {
 		makeUseCase.EXPECT().
 			Do(usecases.MakeIn{
 				OutputDir:   "dist",
-				OutputName:  "package",
+				OutputName:  "hello",
 				Platforms:   defaultPlatforms,
 				GoBuildArgs: []string{"-ldflags", "-X foo=bar"},
 			})
@@ -55,9 +70,9 @@ func TestCmd_Run(t *testing.T) {
 		cmd := Cmd{
 			Make:   makeUseCase,
 			Logger: mock_adaptors.NewLogger(t),
-			Env:    newEnvMock(ctrl),
+			Env:    mock_adaptors.NewMockEnv(ctrl),
 		}
-		exitCode := cmd.Run([]string{"goxzst", "--", "-ldflags", "-X foo=bar"}, "version")
+		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "--", "-ldflags", "-X foo=bar"}, version)
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}
@@ -70,7 +85,7 @@ func TestCmd_Run(t *testing.T) {
 		makeUseCase.EXPECT().
 			Do(usecases.MakeIn{
 				OutputDir:  "dist",
-				OutputName: "package",
+				OutputName: "hello",
 				Platforms: []build.Platform{
 					{GOOS: "linux", GOARCH: "arm"},
 				},
@@ -80,9 +95,9 @@ func TestCmd_Run(t *testing.T) {
 		cmd := Cmd{
 			Make:   makeUseCase,
 			Logger: mock_adaptors.NewLogger(t),
-			Env:    newEnvMock(ctrl),
+			Env:    mock_adaptors.NewMockEnv(ctrl),
 		}
-		exitCode := cmd.Run([]string{"goxzst", "-osarch", "linux_arm"}, "version")
+		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-osarch", "linux_arm"}, version)
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}
@@ -95,7 +110,7 @@ func TestCmd_Run(t *testing.T) {
 		makeUseCase.EXPECT().
 			Do(usecases.MakeIn{
 				OutputDir:             "dist",
-				OutputName:            "package",
+				OutputName:            "hello",
 				Platforms:             defaultPlatforms,
 				GoBuildArgs:           []string{},
 				ArchiveExtraFilenames: []string{"README.md", "LICENSE"},
@@ -104,9 +119,9 @@ func TestCmd_Run(t *testing.T) {
 		cmd := Cmd{
 			Make:   makeUseCase,
 			Logger: mock_adaptors.NewLogger(t),
-			Env:    newEnvMock(ctrl),
+			Env:    mock_adaptors.NewMockEnv(ctrl),
 		}
-		exitCode := cmd.Run([]string{"goxzst", "-i", "README.md LICENSE"}, "version")
+		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-i", "README.md LICENSE"}, version)
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}
@@ -119,7 +134,7 @@ func TestCmd_Run(t *testing.T) {
 		makeUseCase.EXPECT().
 			Do(usecases.MakeIn{
 				OutputDir:         "dist",
-				OutputName:        "package",
+				OutputName:        "hello",
 				Platforms:         defaultPlatforms,
 				GoBuildArgs:       []string{},
 				TemplateFilenames: []string{"template1", "template2"},
@@ -128,19 +143,11 @@ func TestCmd_Run(t *testing.T) {
 		cmd := Cmd{
 			Make:   makeUseCase,
 			Logger: mock_adaptors.NewLogger(t),
-			Env:    newEnvMock(ctrl),
+			Env:    mock_adaptors.NewMockEnv(ctrl),
 		}
-		exitCode := cmd.Run([]string{"goxzst", "-t", "template1 template2"}, "version")
+		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-t", "template1 template2"}, version)
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}
 	})
-}
-
-func newEnvMock(ctrl *gomock.Controller) *mock_adaptors.MockEnv {
-	env := mock_adaptors.NewMockEnv(ctrl)
-	env.EXPECT().
-		Getwd().
-		Return("/package", nil)
-	return env
 }

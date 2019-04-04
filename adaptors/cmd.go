@@ -3,7 +3,6 @@ package adaptors
 import (
 	"flag"
 	"fmt"
-	"path/filepath"
 	"strings"
 
 	"github.com/int128/goxzst/adaptors/interfaces"
@@ -18,19 +17,19 @@ A command for cross-build, zip archive, sha digest for each GOOS/GOARCH and temp
 
 Examples:
   To make cross-build, zip and sha256 for the default platforms:
-    %[1]s
+    %[1]s -o NAME
 
   You can set the target platforms:
-    %[1]s -osarch "linux_amd64 linux_arm"
+    %[1]s -o NAME -osarch "linux_amd64 linux_arm"
 
   You can pass extra arguments to go build:
-    %[1]s -- -ldflags "-X main.version=$VERSION"
+    %[1]s -o NAME -- -ldflags "-X main.version=$VERSION"
 
   You can add extra files to zip:
-    %[1]s -i "LICENSE README.md"
+    %[1]s -o NAME -i "LICENSE README.md"
 
 Usage:
-  %[1]s [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-t "FILE ..."] [--] [build args]
+  %[1]s -o NAME [-d DIR] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-t "FILE ..."] [--] [build args]
 
 Options:
 `
@@ -47,19 +46,22 @@ type Cmd struct {
 }
 
 func (cmd *Cmd) Run(args []string, version string) int {
-	wd, _ := cmd.Env.Getwd()
 	var o cmdOptions
 	f := flag.NewFlagSet(args[0], flag.ExitOnError)
 	f.Usage = func() {
 		_, _ = fmt.Fprintf(f.Output(), usage, f.Name(), version)
 		f.PrintDefaults()
 	}
+	f.StringVar(&o.outputName, "o", "", "Output name (mandatory)")
 	f.StringVar(&o.outputDir, "d", "dist", "Output directory")
-	f.StringVar(&o.outputName, "o", filepath.Base(wd), "Output name")
 	f.StringVar(&o.osarch, "osarch", "linux_amd64 darwin_amd64 windows_amd64", "List of GOOS_GOARCH separated by space")
 	f.StringVar(&o.archiveExtraFilenames, "i", "", "List of extra files to add to the zip, separated by space")
 	f.StringVar(&o.templateFilenames, "t", "", "List of template files separated by space")
 	if err := f.Parse(args[1:]); err != nil {
+		return 1
+	}
+	if o.outputName == "" {
+		cmd.Logger.Logf("You need to set output name by -o option")
 		return 1
 	}
 	platforms, err := o.platformList()
@@ -84,8 +86,8 @@ func (cmd *Cmd) Run(args []string, version string) int {
 }
 
 type cmdOptions struct {
-	outputDir             string
 	outputName            string
+	outputDir             string
 	osarch                string
 	archiveExtraFilenames string
 	templateFilenames     string
