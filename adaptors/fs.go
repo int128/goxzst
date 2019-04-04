@@ -8,13 +8,13 @@ import (
 	"github.com/pkg/errors"
 )
 
-func NewFilesystem() adaptors.Filesystem {
-	return &Filesystem{}
+func NewFileSystem() adaptors.FileSystem {
+	return &FileSystem{}
 }
 
-type Filesystem struct{}
+type FileSystem struct{}
 
-func (*Filesystem) Open(name string) (io.ReadCloser, error) {
+func (*FileSystem) Open(name string) (io.ReadCloser, error) {
 	f, err := os.Open(name)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -22,7 +22,7 @@ func (*Filesystem) Open(name string) (io.ReadCloser, error) {
 	return f, nil
 }
 
-func (*Filesystem) Create(name string) (io.WriteCloser, error) {
+func (*FileSystem) Create(name string) (io.WriteCloser, error) {
 	f, err := os.Create(name)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -30,14 +30,14 @@ func (*Filesystem) Create(name string) (io.WriteCloser, error) {
 	return f, nil
 }
 
-func (*Filesystem) Remove(name string) error {
+func (*FileSystem) Remove(name string) error {
 	if err := os.Remove(name); err != nil {
 		return errors.WithStack(err)
 	}
 	return nil
 }
 
-func (*Filesystem) Stat(name string) (os.FileInfo, error) {
+func (*FileSystem) Stat(name string) (os.FileInfo, error) {
 	fileInfo, err := os.Stat(name)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -45,7 +45,7 @@ func (*Filesystem) Stat(name string) (os.FileInfo, error) {
 	return fileInfo, nil
 }
 
-func (*Filesystem) MkdirAll(path string) error {
+func (*FileSystem) MkdirAll(path string) error {
 	if err := os.MkdirAll(path, 0755); err != nil {
 		return errors.WithStack(err)
 	}

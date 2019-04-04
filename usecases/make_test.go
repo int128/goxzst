@@ -37,7 +37,7 @@ func TestMake_Do(t *testing.T) {
 			}).
 			Return(&usecases.DigestOut{SHA256: "sha256"}, nil)
 
-		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
+		filesystem := mock_adaptors.NewMockFileSystem(ctrl)
 		filesystem.EXPECT().
 			Remove("output_linux_amd64")
 
@@ -46,7 +46,7 @@ func TestMake_Do(t *testing.T) {
 			Archive:        archive,
 			Digest:         digest,
 			RenderTemplate: mock_usecases.NewMockRenderTemplate(ctrl),
-			Filesystem:     filesystem,
+			FileSystem:     filesystem,
 			Logger:         mock_adaptors.NewLogger(t),
 		}
 		if err := u.Do(usecases.MakeIn{
@@ -61,7 +61,7 @@ func TestMake_Do(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
+		filesystem := mock_adaptors.NewMockFileSystem(ctrl)
 		filesystem.EXPECT().
 			Remove("dir/output_linux_amd64")
 		filesystem.EXPECT().
@@ -126,7 +126,7 @@ func TestMake_Do(t *testing.T) {
 			Archive:        archive,
 			Digest:         digest,
 			RenderTemplate: renderTemplate,
-			Filesystem:     filesystem,
+			FileSystem:     filesystem,
 			Logger:         mock_adaptors.NewLogger(t),
 		}
 		if err := u.Do(usecases.MakeIn{

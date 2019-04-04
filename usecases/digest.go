@@ -18,17 +18,17 @@ func NewDigest(i Digest) usecases.Digest {
 
 type Digest struct {
 	dig.In
-	Filesystem adaptors.Filesystem
+	FileSystem adaptors.FileSystem
 	Logger     adaptors.Logger
 }
 
 func (u *Digest) Do(in usecases.DigestIn) (*usecases.DigestOut, error) {
-	if err := u.Filesystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
+	if err := u.FileSystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
 		return nil, errors.Wrapf(err, "error while creating the output directory")
 	}
 
 	u.Logger.Logf("Creating %s", in.OutputFilename)
-	input, err := u.Filesystem.Open(in.InputFilename)
+	input, err := u.FileSystem.Open(in.InputFilename)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error while opening the file %s", in.InputFilename)
 	}
@@ -40,7 +40,7 @@ func (u *Digest) Do(in usecases.DigestIn) (*usecases.DigestOut, error) {
 	}
 	h := fmt.Sprintf("%x", w.Sum(nil))
 
-	output, err := u.Filesystem.Create(in.OutputFilename)
+	output, err := u.FileSystem.Create(in.OutputFilename)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error while creating the file %s", in.OutputFilename)
 	}

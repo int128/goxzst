@@ -15,5 +15,5 @@ var dependencies = []interface{}{
 	adaptors.NewCmd,
 	adaptors.NewLogger,
 	adaptors.NewEnv,
-	adaptors.NewFilesystem,
+	adaptors.NewFileSystem,
 }

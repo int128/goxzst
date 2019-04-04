@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-//go:generate mockgen -package mock_adaptors -destination ../mock_adaptors/mock_adaptors.go github.com/int128/goxzst/adaptors/interfaces Env,Filesystem
+//go:generate mockgen -package mock_adaptors -destination ../mock_adaptors/mock_adaptors.go github.com/int128/goxzst/adaptors/interfaces Env,FileSystem
 
 type Cmd interface {
 	Run(args []string, version string) int
@@ -26,7 +26,7 @@ type ExecIn struct {
 	ExtraEnv []string
 }
 
-type Filesystem interface {
+type FileSystem interface {
 	Open(name string) (io.ReadCloser, error)
 	Create(name string) (io.WriteCloser, error)
 	Remove(name string) error

@@ -17,12 +17,12 @@ func NewRenderTemplate(i RenderTemplate) usecases.RenderTemplate {
 type RenderTemplate struct {
 	dig.In
 	Env        adaptors.Env
-	Filesystem adaptors.Filesystem
+	FileSystem adaptors.FileSystem
 	Logger     adaptors.Logger
 }
 
 func (u *RenderTemplate) Do(in usecases.RenderTemplateIn) error {
-	if err := u.Filesystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
+	if err := u.FileSystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
 		return errors.Wrapf(err, "error while creating the output directory")
 	}
 
@@ -36,7 +36,7 @@ func (u *RenderTemplate) Do(in usecases.RenderTemplateIn) error {
 		return errors.Wrapf(err, "error while loading templates")
 	}
 
-	output, err := u.Filesystem.Create(in.OutputFilename)
+	output, err := u.FileSystem.Create(in.OutputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while creating the file %s", in.OutputFilename)
 	}

@@ -21,13 +21,13 @@ func TestCrossBuild_Do(t *testing.T) {
 				Args:     []string{"build", "-o", "output"},
 				ExtraEnv: []string{"GOOS=linux", "GOARCH=amd64"},
 			})
-		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
+		filesystem := mock_adaptors.NewMockFileSystem(ctrl)
 		filesystem.EXPECT().
 			MkdirAll(".")
 
 		u := CrossBuild{
 			Env:        env,
-			Filesystem: filesystem,
+			FileSystem: filesystem,
 			Logger:     mock_adaptors.NewLogger(t),
 		}
 		if err := u.Do(usecases.CrossBuildIn{
@@ -49,13 +49,13 @@ func TestCrossBuild_Do(t *testing.T) {
 				Args:     []string{"build", "-o", "dist/output", "-ldflags", "-X foo=bar"},
 				ExtraEnv: []string{"GOOS=linux", "GOARCH=amd64"},
 			})
-		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
+		filesystem := mock_adaptors.NewMockFileSystem(ctrl)
 		filesystem.EXPECT().
 			MkdirAll("dist")
 
 		u := CrossBuild{
 			Env:        env,
-			Filesystem: filesystem,
+			FileSystem: filesystem,
 			Logger:     mock_adaptors.NewLogger(t),
 		}
 		if err := u.Do(usecases.CrossBuildIn{

@@ -15,7 +15,7 @@ func TestDigest_Do(t *testing.T) {
 	defer ctrl.Finish()
 
 	var b mock_adaptors.WriteBuffer
-	filesystem := mock_adaptors.NewMockFilesystem(ctrl)
+	filesystem := mock_adaptors.NewMockFileSystem(ctrl)
 	filesystem.EXPECT().
 		MkdirAll("dist")
 	filesystem.EXPECT().
@@ -26,7 +26,7 @@ func TestDigest_Do(t *testing.T) {
 		Return(ioutil.NopCloser(strings.NewReader("text1")), nil)
 
 	u := Digest{
-		Filesystem: filesystem,
+		FileSystem: filesystem,
 		Logger:     mock_adaptors.NewLogger(t),
 	}
 	out, err := u.Do(usecases.DigestIn{

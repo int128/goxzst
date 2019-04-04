@@ -21,7 +21,7 @@ type Make struct {
 	Archive        usecases.Archive
 	Digest         usecases.Digest
 	RenderTemplate usecases.RenderTemplate
-	Filesystem     adaptors.Filesystem
+	FileSystem     adaptors.FileSystem
 	Logger         adaptors.Logger
 }
 
@@ -52,7 +52,7 @@ func (u *Make) Do(in usecases.MakeIn) error {
 
 	for _, buildOut := range buildOuts {
 		u.Logger.Logf("Removing %s", buildOut.executableFilename)
-		if err := u.Filesystem.Remove(buildOut.executableFilename); err != nil {
+		if err := u.FileSystem.Remove(buildOut.executableFilename); err != nil {
 			return errors.Wrapf(err, "error while removing %s", buildOut.executableFilename)
 		}
 	}

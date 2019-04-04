@@ -22,7 +22,7 @@ func TestNewRenderTemplate(t *testing.T) {
 			AnyTimes()
 
 		var b mock_adaptors.WriteBuffer
-		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
+		filesystem := mock_adaptors.NewMockFileSystem(ctrl)
 		filesystem.EXPECT().
 			MkdirAll("dist")
 		filesystem.EXPECT().
@@ -31,7 +31,7 @@ func TestNewRenderTemplate(t *testing.T) {
 
 		u := RenderTemplate{
 			Env:        env,
-			Filesystem: filesystem,
+			FileSystem: filesystem,
 			Logger:     mock_adaptors.NewLogger(t),
 		}
 		if err := u.Do(usecases.RenderTemplateIn{
@@ -64,7 +64,7 @@ func TestNewRenderTemplate(t *testing.T) {
 			AnyTimes()
 
 		var b mock_adaptors.WriteBuffer
-		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
+		filesystem := mock_adaptors.NewMockFileSystem(ctrl)
 		filesystem.EXPECT().
 			MkdirAll("dist")
 		filesystem.EXPECT().
@@ -73,7 +73,7 @@ func TestNewRenderTemplate(t *testing.T) {
 
 		u := RenderTemplate{
 			Env:        env,
-			Filesystem: filesystem,
+			FileSystem: filesystem,
 			Logger:     mock_adaptors.NewLogger(t),
 		}
 		err := u.Do(usecases.RenderTemplateIn{

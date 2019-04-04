@@ -28,7 +28,7 @@ func TestArchive_Do(t *testing.T) {
 	defer ctrl.Finish()
 
 	var b mock_adaptors.WriteBuffer
-	filesystem := mock_adaptors.NewMockFilesystem(ctrl)
+	filesystem := mock_adaptors.NewMockFileSystem(ctrl)
 	filesystem.EXPECT().
 		MkdirAll("dist")
 	filesystem.EXPECT().
@@ -48,7 +48,7 @@ func TestArchive_Do(t *testing.T) {
 		Return(ioutil.NopCloser(strings.NewReader("text2")), nil)
 
 	u := Archive{
-		Filesystem: filesystem,
+		FileSystem: filesystem,
 		Logger:     mock_adaptors.NewLogger(t),
 	}
 	if err := u.Do(usecases.ArchiveIn{

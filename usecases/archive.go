@@ -17,17 +17,17 @@ func NewArchive(i Archive) usecases.Archive {
 
 type Archive struct {
 	dig.In
-	Filesystem adaptors.Filesystem
+	FileSystem adaptors.FileSystem
 	Logger     adaptors.Logger
 }
 
 func (u *Archive) Do(in usecases.ArchiveIn) error {
-	if err := u.Filesystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
+	if err := u.FileSystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
 		return errors.Wrapf(err, "error while creating the output directory")
 	}
 
 	u.Logger.Logf("Creating %s", in.OutputFilename)
-	output, err := u.Filesystem.Create(in.OutputFilename)
+	output, err := u.FileSystem.Create(in.OutputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while creating the file %s", in.OutputFilename)
 	}
@@ -46,7 +46,7 @@ func (u *Archive) Do(in usecases.ArchiveIn) error {
 }
 
 func (u *Archive) addEntry(zipWriter *zip.Writer, e usecases.ArchiveEntry) error {
-	stat, err := u.Filesystem.Stat(e.InputFilename)
+	stat, err := u.FileSystem.Stat(e.InputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while getting mode of the file %s", e.InputFilename)
 	}
@@ -60,7 +60,7 @@ func (u *Archive) addEntry(zipWriter *zip.Writer, e usecases.ArchiveEntry) error
 	if err != nil {
 		return errors.Wrapf(err, "error while creating a header for the file %s", e.Filename)
 	}
-	input, err := u.Filesystem.Open(e.InputFilename)
+	input, err := u.FileSystem.Open(e.InputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while opening the file %s", e.InputFilename)
 	}
