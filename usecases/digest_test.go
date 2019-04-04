@@ -18,7 +18,9 @@ func TestDigest_Do(t *testing.T) {
 	var b bytes.Buffer
 	filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 	filesystem.EXPECT().
-		Create("output").
+		MkdirAll("dist")
+	filesystem.EXPECT().
+		Create("dist/output").
 		Return(&nopWriteCloser{&b}, nil)
 	filesystem.EXPECT().
 		Open("input1").
@@ -30,7 +32,7 @@ func TestDigest_Do(t *testing.T) {
 	}
 	out, err := u.Do(usecases.DigestIn{
 		InputFilename:  "input1",
-		OutputFilename: "output",
+		OutputFilename: "dist/output",
 	})
 	if err != nil {
 		t.Errorf("Do returned error: %+v", err)

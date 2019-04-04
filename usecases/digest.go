@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"path/filepath"
 
 	"github.com/int128/goxzst/adaptors/interfaces"
 	"github.com/int128/goxzst/usecases/interfaces"
@@ -22,8 +23,11 @@ type Digest struct {
 }
 
 func (u *Digest) Do(in usecases.DigestIn) (*usecases.DigestOut, error) {
-	u.Logger.Logf("Creating %s", in.OutputFilename)
+	if err := u.Filesystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
+		return nil, errors.Wrapf(err, "error while creating the output directory")
+	}
 
+	u.Logger.Logf("Creating %s", in.OutputFilename)
 	input, err := u.Filesystem.Open(in.InputFilename)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error while opening the file %s", in.InputFilename)

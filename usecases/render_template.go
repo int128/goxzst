@@ -22,8 +22,11 @@ type RenderTemplate struct {
 }
 
 func (u *RenderTemplate) Do(in usecases.RenderTemplateIn) error {
-	u.Logger.Logf("Creating %s from the template %s", in.OutputFilename, in.InputFilename)
+	if err := u.Filesystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
+		return errors.Wrapf(err, "error while creating the output directory")
+	}
 
+	u.Logger.Logf("Creating %s from the template %s", in.OutputFilename, in.InputFilename)
 	tpl, err := template.New(filepath.Base(in.InputFilename)).
 		Funcs(template.FuncMap{
 			"env": u.env,

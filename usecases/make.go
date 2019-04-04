@@ -25,12 +25,6 @@ type Make struct {
 }
 
 func (u *Make) Do(in usecases.MakeIn) error {
-	if in.OutputDir != "" {
-		if err := u.Filesystem.MkdirAll(in.OutputDir); err != nil {
-			return errors.Wrapf(err, "error while creating the output directory")
-		}
-	}
-
 	var executableFilenames []string
 	templateVariables := make(map[string]string)
 	for _, platform := range in.Platforms {

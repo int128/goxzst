@@ -24,7 +24,9 @@ func TestNewRenderTemplate(t *testing.T) {
 		var b bytes.Buffer
 		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 		filesystem.EXPECT().
-			Create("output").
+			MkdirAll("dist")
+		filesystem.EXPECT().
+			Create("dist/output").
 			Return(&nopWriteCloser{&b}, nil)
 
 		u := RenderTemplate{
@@ -34,7 +36,7 @@ func TestNewRenderTemplate(t *testing.T) {
 		}
 		if err := u.Do(usecases.RenderTemplateIn{
 			InputFilename:  "testdata/homebrew.rb",
-			OutputFilename: "output",
+			OutputFilename: "dist/output",
 			Variables: map[string]string{
 				"darwin_amd64_zip_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
 			},
@@ -64,7 +66,9 @@ func TestNewRenderTemplate(t *testing.T) {
 		var b bytes.Buffer
 		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 		filesystem.EXPECT().
-			Create("output").
+			MkdirAll("dist")
+		filesystem.EXPECT().
+			Create("dist/output").
 			Return(&nopWriteCloser{&b}, nil)
 
 		u := RenderTemplate{
@@ -74,7 +78,7 @@ func TestNewRenderTemplate(t *testing.T) {
 		}
 		err := u.Do(usecases.RenderTemplateIn{
 			InputFilename:  "testdata/homebrew.rb",
-			OutputFilename: "output",
+			OutputFilename: "dist/output",
 			Variables: map[string]string{
 				"darwin_amd64_zip_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
 			},

@@ -63,8 +63,6 @@ func TestMake_Do(t *testing.T) {
 
 		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 		filesystem.EXPECT().
-			MkdirAll("dir")
-		filesystem.EXPECT().
 			Remove("dir/output_linux_amd64")
 
 		crossBuild := mock_usecases.NewMockCrossBuild(ctrl)

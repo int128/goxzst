@@ -21,10 +21,14 @@ func TestCrossBuild_Do(t *testing.T) {
 				Args:     []string{"build", "-o", "output"},
 				ExtraEnv: []string{"GOOS=linux", "GOARCH=amd64"},
 			})
+		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
+		filesystem.EXPECT().
+			MkdirAll(".")
 
 		u := CrossBuild{
-			Env:    env,
-			Logger: mock_adaptors.NewLogger(t),
+			Env:        env,
+			Filesystem: filesystem,
+			Logger:     mock_adaptors.NewLogger(t),
 		}
 		if err := u.Do(usecases.CrossBuildIn{
 			OutputFilename: "output",
@@ -42,16 +46,20 @@ func TestCrossBuild_Do(t *testing.T) {
 		env.EXPECT().
 			Exec(adaptors.ExecIn{
 				Name:     "go",
-				Args:     []string{"build", "-o", "output", "-ldflags", "-X foo=bar"},
+				Args:     []string{"build", "-o", "dist/output", "-ldflags", "-X foo=bar"},
 				ExtraEnv: []string{"GOOS=linux", "GOARCH=amd64"},
 			})
+		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
+		filesystem.EXPECT().
+			MkdirAll("dist")
 
 		u := CrossBuild{
-			Env:    env,
-			Logger: mock_adaptors.NewLogger(t),
+			Env:        env,
+			Filesystem: filesystem,
+			Logger:     mock_adaptors.NewLogger(t),
 		}
 		if err := u.Do(usecases.CrossBuildIn{
-			OutputFilename: "output",
+			OutputFilename: "dist/output",
 			GoBuildArgs:    []string{"-ldflags", "-X foo=bar"},
 			Platform:       build.Platform{GOOS: "linux", GOARCH: "amd64"},
 		}); err != nil {

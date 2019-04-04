@@ -21,7 +21,9 @@ func TestArchive_Do(t *testing.T) {
 	var zipBuffer bytes.Buffer
 	filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 	filesystem.EXPECT().
-		Create("output").
+		MkdirAll("dist")
+	filesystem.EXPECT().
+		Create("dist/output").
 		Return(&nopWriteCloser{&zipBuffer}, nil)
 	filesystem.EXPECT().
 		GetMode("input1").
@@ -41,7 +43,7 @@ func TestArchive_Do(t *testing.T) {
 		Logger:     mock_adaptors.NewLogger(t),
 	}
 	if err := u.Do(usecases.ArchiveIn{
-		OutputFilename: "output",
+		OutputFilename: "dist/output",
 		Entries: []usecases.ArchiveEntry{
 			{
 				Path:          "entry1",

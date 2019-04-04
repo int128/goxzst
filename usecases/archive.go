@@ -3,6 +3,7 @@ package usecases
 import (
 	"archive/zip"
 	"io"
+	"path/filepath"
 
 	"github.com/int128/goxzst/adaptors/interfaces"
 	"github.com/int128/goxzst/usecases/interfaces"
@@ -21,8 +22,11 @@ type Archive struct {
 }
 
 func (u *Archive) Do(in usecases.ArchiveIn) error {
-	u.Logger.Logf("Creating %s", in.OutputFilename)
+	if err := u.Filesystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
+		return errors.Wrapf(err, "error while creating the output directory")
+	}
 
+	u.Logger.Logf("Creating %s", in.OutputFilename)
 	output, err := u.Filesystem.Create(in.OutputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while creating the file %s", in.OutputFilename)
