@@ -46,10 +46,10 @@ func TestArchive_Do(t *testing.T) {
 		OutputFilename: "dist/output",
 		Entries: []usecases.ArchiveEntry{
 			{
-				Path:          "entry1",
+				Filename:      "entry1",
 				InputFilename: "input1",
 			}, {
-				Path:          "entry2",
+				Filename:      "entry2",
 				InputFilename: "input2",
 			},
 		},

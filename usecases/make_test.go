@@ -26,7 +26,7 @@ func TestMake_Do(t *testing.T) {
 			Do(usecases.ArchiveIn{
 				OutputFilename: "output_linux_amd64.zip",
 				Entries: []usecases.ArchiveEntry{
-					{Path: "output", InputFilename: "output_linux_amd64"},
+					{Filename: "output", InputFilename: "output_linux_amd64"},
 				},
 			})
 		digest := mock_usecases.NewMockDigest(ctrl)
@@ -64,6 +64,8 @@ func TestMake_Do(t *testing.T) {
 		filesystem := mock_adaptors.NewMockFilesystem(ctrl)
 		filesystem.EXPECT().
 			Remove("dir/output_linux_amd64")
+		filesystem.EXPECT().
+			Remove("dir/output_windows_amd64.exe")
 
 		crossBuild := mock_usecases.NewMockCrossBuild(ctrl)
 		crossBuild.EXPECT().
@@ -72,13 +74,27 @@ func TestMake_Do(t *testing.T) {
 				Platform:       build.Platform{GOOS: "linux", GOARCH: "amd64"},
 				GoBuildArgs:    []string{"-ldflags", "-X foo=bar"},
 			})
+		crossBuild.EXPECT().
+			Do(usecases.CrossBuildIn{
+				OutputFilename: "dir/output_windows_amd64.exe",
+				Platform:       build.Platform{GOOS: "windows", GOARCH: "amd64"},
+				GoBuildArgs:    []string{"-ldflags", "-X foo=bar"},
+			})
 		archive := mock_usecases.NewMockArchive(ctrl)
 		archive.EXPECT().
 			Do(usecases.ArchiveIn{
 				OutputFilename: "dir/output_linux_amd64.zip",
 				Entries: []usecases.ArchiveEntry{
-					{Path: "output", InputFilename: "dir/output_linux_amd64"},
-					{Path: "LICENSE", InputFilename: "LICENSE"},
+					{Filename: "output", InputFilename: "dir/output_linux_amd64"},
+					{Filename: "LICENSE", InputFilename: "LICENSE"},
+				},
+			})
+		archive.EXPECT().
+			Do(usecases.ArchiveIn{
+				OutputFilename: "dir/output_windows_amd64.zip",
+				Entries: []usecases.ArchiveEntry{
+					{Filename: "output.exe", InputFilename: "dir/output_windows_amd64.exe"},
+					{Filename: "LICENSE", InputFilename: "LICENSE"},
 				},
 			})
 		digest := mock_usecases.NewMockDigest(ctrl)
@@ -87,14 +103,21 @@ func TestMake_Do(t *testing.T) {
 				OutputFilename: "dir/output_linux_amd64.zip.sha256",
 				InputFilename:  "dir/output_linux_amd64.zip",
 			}).
-			Return(&usecases.DigestOut{SHA256: "sha256"}, nil)
+			Return(&usecases.DigestOut{SHA256: "linux_sha256"}, nil)
+		digest.EXPECT().
+			Do(usecases.DigestIn{
+				OutputFilename: "dir/output_windows_amd64.zip.sha256",
+				InputFilename:  "dir/output_windows_amd64.zip",
+			}).
+			Return(&usecases.DigestOut{SHA256: "windows_sha256"}, nil)
 		renderTemplate := mock_usecases.NewMockRenderTemplate(ctrl)
 		renderTemplate.EXPECT().
 			Do(usecases.RenderTemplateIn{
 				InputFilename:  "template1",
 				OutputFilename: "dir/template1",
 				Variables: map[string]string{
-					"linux_amd64_zip_sha256": "sha256",
+					"linux_amd64_zip_sha256":   "linux_sha256",
+					"windows_amd64_zip_sha256": "windows_sha256",
 				},
 			})
 
@@ -111,6 +134,7 @@ func TestMake_Do(t *testing.T) {
 			OutputName: "output",
 			Platforms: []build.Platform{
 				{GOOS: "linux", GOARCH: "amd64"},
+				{GOOS: "windows", GOARCH: "amd64"},
 			},
 			GoBuildArgs:           []string{"-ldflags", "-X foo=bar"},
 			ArchiveExtraFilenames: []string{"LICENSE"},

@@ -37,7 +37,7 @@ type ArchiveIn struct {
 }
 
 type ArchiveEntry struct {
-	Path          string
+	Filename      string // filename in the archive
 	InputFilename string
 }
 
