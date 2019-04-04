@@ -1,7 +1,6 @@
 # goxzst [![CircleCI](https://circleci.com/gh/int128/goxzst.svg?style=shield)](https://circleci.com/gh/int128/goxzst)
 
-This is a command for cross-build, zip archive and sha digest for each GOOS/GOARCH, and rendering templates.
-It automates typical release process.
+This is a command for cross-build, zip archive, sha digest and template rendering.
 
 
 ## Getting Started
@@ -27,7 +26,7 @@ It will create the following files:
 - `dist/hello_windows_amd64.zip`
 - `dist/hello_windows_amd64.zip.sha256`
 
-Each zip file has the executable file as follows:
+Each zip file contains an executable file as follows:
 
 ```
 % zipinfo dist/hello_linux_amd64.zip
@@ -44,7 +43,7 @@ You can set the following options:
 
 ```
 Usage:
-  goxzst [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-t "FILE ..."] [--] [build args]
+  goxzst -o NAME [-d DIR] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-t "FILE ..."] [--] [build args]
 
 Options:
   -d string
@@ -52,7 +51,7 @@ Options:
   -i string
     	List of extra files to add to the zip, separated by space
   -o string
-    	Output name (default "goxzst")
+    	Output name (mandatory)
   -osarch string
     	List of GOOS_GOARCH separated by space (default "linux_amd64 darwin_amd64 windows_amd64")
   -t string
@@ -68,7 +67,7 @@ goxzst performs the following operations for each platform:
 and optionally renders the templates.
 Finally it removes the executable files.
 
-### Build
+### Cross-build
 
 You can set the target platforms by `-osarch` option:
 
