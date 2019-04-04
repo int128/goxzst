@@ -33,7 +33,7 @@ Each zip file has the executable file as follows:
 % zipinfo dist/hello_linux_amd64.zip
 Archive:  dist/hello_linux_amd64.zip
 Zip file size: 2040916 bytes, number of entries: 1
--rwxr-xr-x  2.0 unx  4100026 bl defN 80-000-00 00:00 hello
+-rwxr-xr-x  2.0 unx  4100026 bl defN 19-Apr-04 14:44 hello
 1 file, 4100026 bytes uncompressed, 2040792 bytes compressed:  50.2%
 ```
 

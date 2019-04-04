@@ -46,15 +46,16 @@ func (u *Archive) Do(in usecases.ArchiveIn) error {
 }
 
 func (u *Archive) addEntry(zipWriter *zip.Writer, e usecases.ArchiveEntry) error {
-	h := &zip.FileHeader{
-		Name:   e.Filename,
-		Method: zip.Deflate,
-	}
-	mode, err := u.Filesystem.GetMode(e.InputFilename)
+	stat, err := u.Filesystem.Stat(e.InputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while getting mode of the file %s", e.InputFilename)
 	}
-	h.SetMode(mode)
+	h := &zip.FileHeader{
+		Name:     e.Filename,
+		Method:   zip.Deflate,
+		Modified: stat.ModTime(),
+	}
+	h.SetMode(stat.Mode())
 	w, err := zipWriter.CreateHeader(h)
 	if err != nil {
 		return errors.Wrapf(err, "error while creating a header for the file %s", e.Filename)

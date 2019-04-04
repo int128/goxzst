@@ -96,19 +96,6 @@ func (mr *MockFilesystemMockRecorder) Create(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockFilesystem)(nil).Create), arg0)
 }
 
-// GetMode mocks base method
-func (m *MockFilesystem) GetMode(arg0 string) (os.FileMode, error) {
-	ret := m.ctrl.Call(m, "GetMode", arg0)
-	ret0, _ := ret[0].(os.FileMode)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetMode indicates an expected call of GetMode
-func (mr *MockFilesystemMockRecorder) GetMode(arg0 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMode", reflect.TypeOf((*MockFilesystem)(nil).GetMode), arg0)
-}
-
 // MkdirAll mocks base method
 func (m *MockFilesystem) MkdirAll(arg0 string) error {
 	ret := m.ctrl.Call(m, "MkdirAll", arg0)
@@ -144,4 +131,17 @@ func (m *MockFilesystem) Remove(arg0 string) error {
 // Remove indicates an expected call of Remove
 func (mr *MockFilesystemMockRecorder) Remove(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockFilesystem)(nil).Remove), arg0)
+}
+
+// Stat mocks base method
+func (m *MockFilesystem) Stat(arg0 string) (os.FileInfo, error) {
+	ret := m.ctrl.Call(m, "Stat", arg0)
+	ret0, _ := ret[0].(os.FileInfo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Stat indicates an expected call of Stat
+func (mr *MockFilesystemMockRecorder) Stat(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Stat", reflect.TypeOf((*MockFilesystem)(nil).Stat), arg0)
 }

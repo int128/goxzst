@@ -37,12 +37,12 @@ func (*Filesystem) Remove(name string) error {
 	return nil
 }
 
-func (*Filesystem) GetMode(name string) (os.FileMode, error) {
-	s, err := os.Stat(name)
+func (*Filesystem) Stat(name string) (os.FileInfo, error) {
+	fileInfo, err := os.Stat(name)
 	if err != nil {
-		return 0, errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
-	return s.Mode(), nil
+	return fileInfo, nil
 }
 
 func (*Filesystem) MkdirAll(path string) error {

@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/int128/goxzst/adaptors/mock_adaptors"
@@ -26,14 +27,20 @@ func TestArchive_Do(t *testing.T) {
 		Create("dist/output").
 		Return(&nopWriteCloser{&zipBuffer}, nil)
 	filesystem.EXPECT().
-		GetMode("input1").
-		Return(os.FileMode(0644), nil)
+		Stat("input1").
+		Return(&mock_adaptors.FileInfo{
+			ModeValue:    0644,
+			ModTimeValue: time.Date(2019, 4, 1, 2, 3, 4, 0, time.UTC),
+		}, nil)
 	filesystem.EXPECT().
 		Open("input1").
 		Return(ioutil.NopCloser(strings.NewReader("text1")), nil)
 	filesystem.EXPECT().
-		GetMode("input2").
-		Return(os.FileMode(0755), nil)
+		Stat("input2").
+		Return(&mock_adaptors.FileInfo{
+			ModeValue:    0755,
+			ModTimeValue: time.Date(2019, 4, 9, 8, 7, 6, 0, time.UTC),
+		}, nil)
 	filesystem.EXPECT().
 		Open("input2").
 		Return(ioutil.NopCloser(strings.NewReader("text2")), nil)
@@ -64,16 +71,25 @@ func TestArchive_Do(t *testing.T) {
 	if len(r.File) != 2 {
 		t.Errorf("len wants 2 but %d", len(r.File))
 	}
-	assertZipEntry(t, r.File[0], "entry1", 0644, []byte("text1"))
-	assertZipEntry(t, r.File[1], "entry2", 0755, []byte("text2"))
+	assertZipEntry(t, r.File[0], "entry1", []byte("text1"), &mock_adaptors.FileInfo{
+		ModeValue:    0644,
+		ModTimeValue: time.Date(2019, 4, 1, 2, 3, 4, 0, time.UTC),
+	})
+	assertZipEntry(t, r.File[1], "entry2", []byte("text2"), &mock_adaptors.FileInfo{
+		ModeValue:    0755,
+		ModTimeValue: time.Date(2019, 4, 9, 8, 7, 6, 0, time.UTC),
+	})
 }
 
-func assertZipEntry(t *testing.T, f *zip.File, name string, mode os.FileMode, content []byte) {
+func assertZipEntry(t *testing.T, f *zip.File, name string, content []byte, fileInfo os.FileInfo) {
 	if f.Name != name {
 		t.Errorf("Name wants %s but %s", name, f.Name)
 	}
-	if f.Mode() != mode {
-		t.Errorf("Mode wants %v but %v", mode, f.Mode())
+	if f.Mode() != fileInfo.Mode() {
+		t.Errorf("Mode wants %v but %v", fileInfo.Mode(), f.Mode())
+	}
+	if f.Modified.UTC() != fileInfo.ModTime().UTC() {
+		t.Errorf("ModTime wants %v but %v", fileInfo.ModTime(), f.Modified)
 	}
 	r, err := f.Open()
 	if err != nil {
