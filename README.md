@@ -1,69 +1,44 @@
 # goxzst [![CircleCI](https://circleci.com/gh/int128/goxzst.svg?style=shield)](https://circleci.com/gh/int128/goxzst)
 
-This is a command for cross-build, zip, shasum for each GOOS/GOARCH and rendering templates.
+This is a command for cross-build, zip archive and sha digest for each GOOS/GOARCH, and rendering templates.
 It automates typical release process.
 
 
 ## Getting Started
 
-Install:
+Install the package:
 
-```
+```sh
 go get github.com/int128/goxzst
 ```
 
-To make cross-build, zip and sha256 for the default platforms:
+To make cross-build, zip and sha256:
 
-```
-% goxzst
-2019/04/03 13:40:44 GOOS=linux GOARCH=amd64 go build -o dist/goxzst_linux_amd64
-2019/04/03 13:40:45 Creating dist/goxzst_linux_amd64.zip
-2019/04/03 13:40:45 Creating dist/goxzst_linux_amd64.zip.sha256
-2019/04/03 13:40:45 GOOS=darwin GOARCH=amd64 go build -o dist/goxzst_darwin_amd64
-2019/04/03 13:40:45 Creating dist/goxzst_darwin_amd64.zip
-2019/04/03 13:40:45 Creating dist/goxzst_darwin_amd64.zip.sha256
-2019/04/03 13:40:45 GOOS=windows GOARCH=amd64 go build -o dist/goxzst_windows_amd64
-2019/04/03 13:40:46 Creating dist/goxzst_windows_amd64.zip
-2019/04/03 13:40:46 Creating dist/goxzst_windows_amd64.zip.sha256
-2019/04/03 13:40:46 Removing dist/goxzst_linux_amd64
-2019/04/03 13:40:46 Removing dist/goxzst_darwin_amd64
-2019/04/03 13:40:46 Removing dist/goxzst_windows_amd64
+```sh
+goxzst -o hello
 ```
 
-You can set the target platforms by `-osarch` option:
+It will create the following files:
+
+- `dist/hello_darwin_amd64.zip`
+- `dist/hello_darwin_amd64.zip.sha256`
+- `dist/hello_linux_amd64.zip`
+- `dist/hello_linux_amd64.zip.sha256`
+- `dist/hello_windows_amd64.zip`
+- `dist/hello_windows_amd64.zip.sha256`
+
+Each zip file has the executable file as follows:
 
 ```
-% goxzst -osarch "linux_amd64 linux_arm"
-```
-
-You can pass extra arguments to go build after double dash:
-
-```
-% goxzst -- -ldflags "-X main.version=$VERSION"
-```
-
-You can render the templates by `-t` option:
-
-```
-% goxzst -t "homebrew.rb krew.yaml"
+% zipinfo dist/hello_linux_amd64.zip
+Archive:  dist/hello_linux_amd64.zip
+Zip file size: 2040916 bytes, number of entries: 1
+-rwxr-xr-x  2.0 unx  4100026 bl defN 80-000-00 00:00 hello
+1 file, 4100026 bytes uncompressed, 2040792 bytes compressed:  50.2%
 ```
 
 
 ## Usage
-
-goxzst performs the following operations for each platform:
-
-1. Run `go build` with `GOOS` and `GOARCH` environment variables.
-1. Archive the executable file into a zip file.
-1. Generate SHA-256 digest of the zip file.
-
-and optionally generates files from the templates.
-It removes the executable files.
-
-Finally, the following files will be created:
-
-- `DIR/NAME_GOOS_GOARCH.zip`: archive
-- `DIR/NAME_GOOS_GOARCH.zip.sha256`: digest
 
 You can set the following options:
 
@@ -84,9 +59,47 @@ Options:
     	List of template files separated by space
 ```
 
+goxzst performs the following operations for each platform:
+
+1. Run `go build` with `GOOS` and `GOARCH` environment variables.
+1. Archive the executable file into a zip file.
+1. Generate SHA-256 digest of the zip file.
+
+and optionally renders the templates.
+Finally it removes the executable files.
+
+### Build
+
+You can set the target platforms by `-osarch` option:
+
+```sh
+goxzst -o hello -osarch "linux_amd64 linux_arm"
+```
+
+You can pass extra arguments to go build after double dash:
+
+```sh
+goxzst -o hello -- -ldflags "-X main.version=$VERSION"
+```
+
+### Archive
+
+You can add extra files to the zip by `-i` option:
+
+```sh
+goxzst -o hello -i "LICENSE README.md"
+```
+
 ### Template
 
-goxzst creates a file which has same filename (not including directory path) of the template.
+You can pass template files by `-t` option:
+
+```sh
+goxzst -o hello -t homebrew.rb
+```
+
+goxzst will render the template as a [Go template](https://golang.org/pkg/text/template/)
+and write it to a file which has the same filename (not including directory path) of the template.
 
 You can use the following functions and variables in a template.
 
@@ -94,6 +107,8 @@ Name | Description | Example
 -----|-------------|--------
 `env(string) string`        | Value of the environment variable. | `env "VERSION"`
 `.GOOS_GOARCH_zip_sha256`   | SHA-256 digest of the zip file.    | `.linux_amd64_zip_sha256`
+
+See also the examples: [homebrew.rb](usecases/testdata/homebrew.rb) and [krew.yaml](usecases/testdata/krew.yaml).
 
 
 ## Contributions

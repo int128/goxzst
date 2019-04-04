@@ -14,7 +14,7 @@ import (
 )
 
 const usage = `%[1]s %[2]s
-A command for cross-build, zip, shasum for each GOOS/GOARCH and rendering templates.
+A command for cross-build, zip archive, sha digest for each GOOS/GOARCH and template rendering.
 
 Examples:
   To make cross-build, zip and sha256 for the default platforms:
@@ -25,6 +25,9 @@ Examples:
 
   You can pass extra arguments to go build:
     %[1]s -- -ldflags "-X main.version=$VERSION"
+
+  You can add extra files to zip:
+    %[1]s -i "LICENSE README.md"
 
 Usage:
   %[1]s [-d DIR] [-o NAME] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-t "FILE ..."] [--] [build args]

@@ -9,7 +9,7 @@ spec:
   version: {{ env "VERSION" }}
   platforms:
     - uri: https://github.com/int128/goxzst/releases/download/{{ env "VERSION" }}/goxzst_linux_amd64.zip
-      sha256: {{ .linux_amd64_zip_sha256 }}
+      sha256: "{{ .linux_amd64_zip_sha256 }}"
       bin: goxzst
       files:
         - from: goxzst
@@ -19,7 +19,7 @@ spec:
           os: linux
           arch: amd64
     - uri: https://github.com/int128/goxzst/releases/download/{{ env "VERSION" }}/goxzst_darwin_amd64.zip
-      sha256: {{ .darwin_amd64_zip_sha256 }}
+      sha256: "{{ .darwin_amd64_zip_sha256 }}"
       bin: goxzst
       files:
         - from: goxzst
@@ -27,4 +27,14 @@ spec:
       selector:
         matchLabels:
           os: darwin
+          arch: amd64
+    - uri: https://github.com/int128/goxzst/releases/download/{{ env "VERSION" }}/goxzst_windows_amd64.zip
+      sha256: "{{ .windows_amd64_zip_sha256 }}"
+      bin: goxzst
+      files:
+        - from: goxzst.exe
+          to: .
+      selector:
+        matchLabels:
+          os: windows
           arch: amd64
