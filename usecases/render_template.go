@@ -7,15 +7,9 @@ import (
 	"github.com/int128/goxzst/adaptors/interfaces"
 	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
-	"go.uber.org/dig"
 )
 
-func NewRenderTemplate(i RenderTemplate) usecases.RenderTemplate {
-	return &i
-}
-
 type RenderTemplate struct {
-	dig.In
 	Env        adaptors.Env
 	FileSystem adaptors.FileSystem
 	Logger     adaptors.Logger

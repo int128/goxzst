@@ -9,15 +9,9 @@ import (
 	"github.com/int128/goxzst/adaptors/interfaces"
 	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
-	"go.uber.org/dig"
 )
 
-func NewDigest(i Digest) usecases.Digest {
-	return &i
-}
-
 type Digest struct {
-	dig.In
 	FileSystem adaptors.FileSystem
 	Logger     adaptors.Logger
 }

@@ -8,15 +8,9 @@ import (
 	"github.com/int128/goxzst/adaptors/interfaces"
 	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
-	"go.uber.org/dig"
 )
 
-func NewCrossBuild(i CrossBuild) usecases.CrossBuild {
-	return &i
-}
-
 type CrossBuild struct {
-	dig.In
 	Env        adaptors.Env
 	FileSystem adaptors.FileSystem
 	Logger     adaptors.Logger

@@ -1,20 +1,17 @@
+//+build wireinject
+
 package di
 
 import (
-	"github.com/int128/goxzst/adaptors/interfaces"
-	"github.com/pkg/errors"
-	"go.uber.org/dig"
+	"github.com/google/wire"
+	"github.com/int128/goxzst/adaptors"
+	"github.com/int128/goxzst/usecases"
 )
 
-func Invoke(f func(cmd adaptors.Cmd)) error {
-	c := dig.New()
-	for _, d := range dependencies {
-		if err := c.Provide(d); err != nil {
-			return errors.Wrapf(err, "error while providing %+v", d)
-		}
-	}
-	if err := c.Invoke(f); err != nil {
-		return errors.Wrapf(err, "error while invoke")
-	}
+func NewCmd() *adaptors.Cmd {
+	wire.Build(
+		adaptors.Set,
+		usecases.Set,
+	)
 	return nil
 }

@@ -8,10 +8,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-func NewEnv() adaptors.Env {
-	return &Env{}
-}
-
 type Env struct{}
 
 func (*Env) Getwd() (string, error) {

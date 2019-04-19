@@ -8,15 +8,9 @@ import (
 	"github.com/int128/goxzst/adaptors/interfaces"
 	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
-	"go.uber.org/dig"
 )
 
-func NewArchive(i Archive) usecases.Archive {
-	return &i
-}
-
 type Archive struct {
-	dig.In
 	FileSystem adaptors.FileSystem
 	Logger     adaptors.Logger
 }

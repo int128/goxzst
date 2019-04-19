@@ -9,7 +9,6 @@ import (
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
-	"go.uber.org/dig"
 )
 
 const usage = `%[1]s %[2]s
@@ -34,12 +33,7 @@ Usage:
 Options:
 `
 
-func NewCmd(i Cmd) adaptors.Cmd {
-	return &i
-}
-
 type Cmd struct {
-	dig.In
 	Make   usecases.Make
 	Env    adaptors.Env
 	Logger adaptors.Logger

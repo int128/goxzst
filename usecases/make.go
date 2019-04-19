@@ -8,15 +8,9 @@ import (
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
-	"go.uber.org/dig"
 )
 
-func NewMake(i Make) usecases.Make {
-	return &i
-}
-
 type Make struct {
-	dig.In
 	CrossBuild     usecases.CrossBuild
 	Archive        usecases.Archive
 	Digest         usecases.Digest
