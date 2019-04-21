@@ -1,17 +1,33 @@
 # goxzst [![CircleCI](https://circleci.com/gh/int128/goxzst.svg?style=shield)](https://circleci.com/gh/int128/goxzst)
 
-This is a command for cross-build, zip archive, sha digest and template rendering.
+This is a command for cross build, ZIP archive, SHA digest and template rendering.
 
 
 ## Getting Started
 
-Install the package:
+Install [the latest release](https://github.com/int128/goxzst/releases):
 
 ```sh
-go get github.com/int128/goxzst
+curl -LO https://github.com/int128/goxzst/releases/download/v0.2.0/goxzst_linux_amd64.zip
+unzip -d ~/bin goxzst_linux_amd64.zip
 ```
 
-To make cross-build, zip and sha256:
+For CircleCI:
+
+```yaml
+version: 2
+jobs:
+  build:
+    steps:
+      - run: |
+          mkdir -p ~/bin
+          echo 'export PATH="$HOME/bin:$PATH"' >> $BASH_ENV
+      - run: |
+          curl -L -o ~/goxzst_linux_amd64.zip https://github.com/int128/goxzst/releases/download/v0.2.0/goxzst_linux_amd64.zip
+          unzip -d ~/bin ~/goxzst_linux_amd64.zip
+```
+
+To make cross build, zip and sha256:
 
 ```sh
 goxzst -o hello
@@ -19,12 +35,14 @@ goxzst -o hello
 
 It will create the following files:
 
-- `dist/hello_darwin_amd64.zip`
-- `dist/hello_darwin_amd64.zip.sha256`
-- `dist/hello_linux_amd64.zip`
-- `dist/hello_linux_amd64.zip.sha256`
-- `dist/hello_windows_amd64.zip`
-- `dist/hello_windows_amd64.zip.sha256`
+```
+dist/hello_darwin_amd64.zip
+dist/hello_darwin_amd64.zip.sha256
+dist/hello_linux_amd64.zip
+dist/hello_linux_amd64.zip.sha256
+dist/hello_windows_amd64.zip
+dist/hello_windows_amd64.zip.sha256
+```
 
 Each zip file contains an executable file as follows:
 
@@ -69,7 +87,7 @@ goxzst performs the following operations for each platform:
 and optionally renders the templates.
 Finally it removes the executable files.
 
-### Cross-build
+### Cross build
 
 You can set the target platforms by `-osarch` option:
 
