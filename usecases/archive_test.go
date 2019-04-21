@@ -98,7 +98,7 @@ func assertZipEntry(t *testing.T, f *zip.File, name string, content []byte, file
 		t.Errorf("error while reading zip entry: %s", err)
 		return
 	}
-	if bytes.Compare(c, content) != 0 {
+	if !bytes.Equal(c, content) {
 		t.Errorf("content wants %v but %v", content, c)
 	}
 }

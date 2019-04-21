@@ -48,7 +48,7 @@ func TestNewRenderTemplate(t *testing.T) {
 		if err != nil {
 			t.Fatalf("could not read want: %s", err)
 		}
-		if bytes.Compare(want, b.Bytes()) != 0 {
+		if !bytes.Equal(want, b.Bytes()) {
 			t.Errorf("rendered content wants \n----\n%s\n----\nbut \n----\n%s", string(want), b.String())
 		}
 	})
