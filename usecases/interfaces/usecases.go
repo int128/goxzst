@@ -1,6 +1,9 @@
 package usecases
 
-import "github.com/int128/goxzst/models/build"
+import (
+	"github.com/int128/goxzst/models/build"
+	"github.com/int128/goxzst/models/digest"
+)
 
 //go:generate mockgen -package mock_usecases -destination ../mock_usecases/mock_usecases.go github.com/int128/goxzst/usecases/interfaces Make,CrossBuild,Archive,Digest,RenderTemplate
 
@@ -14,6 +17,7 @@ type MakeIn struct {
 	Platforms             []build.Platform
 	GoBuildArgs           []string
 	ArchiveExtraFilenames []string
+	DigestAlgorithm       *digest.Algorithm
 	TemplateFilenames     []string
 }
 
@@ -42,16 +46,13 @@ type ArchiveEntry struct {
 }
 
 type Digest interface {
-	Do(in DigestIn) (*DigestOut, error)
+	Do(in DigestIn) error
 }
 
 type DigestIn struct {
 	InputFilename  string
 	OutputFilename string
-}
-
-type DigestOut struct {
-	SHA256 string
+	Algorithm      *digest.Algorithm
 }
 
 type RenderTemplate interface {

@@ -7,6 +7,7 @@ import (
 
 	"github.com/int128/goxzst/adaptors/interfaces"
 	"github.com/int128/goxzst/models/build"
+	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/pkg/errors"
 )
@@ -28,7 +29,7 @@ Examples:
     %[1]s -o NAME -i "LICENSE README.md"
 
 Usage:
-  %[1]s -o NAME [-d DIR] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-t "FILE ..."] [--] [build args]
+  %[1]s -o NAME [-d DIR] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-a ALGORITHM] [-t "FILE ..."] [--] [build args]
 
 Options:
 `
@@ -50,6 +51,7 @@ func (cmd *Cmd) Run(args []string, version string) int {
 	f.StringVar(&o.outputDir, "d", "dist", "Output directory")
 	f.StringVar(&o.osarch, "osarch", "linux_amd64 darwin_amd64 windows_amd64", "List of GOOS_GOARCH separated by space")
 	f.StringVar(&o.archiveExtraFilenames, "i", "", "List of extra files to add to the zip, separated by space")
+	f.StringVar(&o.digestAlgorithm, "a", "sha256", fmt.Sprintf("Digest algorithm. One of (%s)", availableDigestAlgorithms()))
 	f.StringVar(&o.templateFilenames, "t", "", "List of template files separated by space")
 	if err := f.Parse(args[1:]); err != nil {
 		return 1
@@ -63,6 +65,11 @@ func (cmd *Cmd) Run(args []string, version string) int {
 		cmd.Logger.Logf("Invalid arguments: %s", err)
 		return 1
 	}
+	digestAlgorithm, err := digest.NewAlgorithm(o.digestAlgorithm)
+	if err != nil {
+		cmd.Logger.Logf("Invalid digest algorithm: %s", err)
+		return 1
+	}
 
 	in := usecases.MakeIn{
 		OutputDir:             o.outputDir,
@@ -70,6 +77,7 @@ func (cmd *Cmd) Run(args []string, version string) int {
 		Platforms:             platforms,
 		GoBuildArgs:           f.Args(),
 		ArchiveExtraFilenames: o.archiveExtraFilenameList(),
+		DigestAlgorithm:       digestAlgorithm,
 		TemplateFilenames:     o.templateFilenameList(),
 	}
 	if err := cmd.Make.Do(in); err != nil {
@@ -79,11 +87,20 @@ func (cmd *Cmd) Run(args []string, version string) int {
 	return 0
 }
 
+func availableDigestAlgorithms() string {
+	var names []string
+	for _, alg := range digest.AvailableAlgorithms {
+		names = append(names, alg.Name)
+	}
+	return strings.Join(names, "|")
+}
+
 type cmdOptions struct {
 	outputName            string
 	outputDir             string
 	osarch                string
 	archiveExtraFilenames string
+	digestAlgorithm       string
 	templateFilenames     string
 }
 

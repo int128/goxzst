@@ -43,9 +43,11 @@ You can set the following options:
 
 ```
 Usage:
-  goxzst -o NAME [-d DIR] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-t "FILE ..."] [--] [build args]
+  goxzst -o NAME [-d DIR] [-osarch "GOOS_GOARCH ..."] [-i "FILE ..."] [-a ALGORITHM] [-t "FILE ..."] [--] [build args]
 
 Options:
+  -a string
+    	Digest algorithm. One of (sha256|sha512) (default "sha256")
   -d string
     	Output directory (default "dist")
   -i string
@@ -62,7 +64,7 @@ goxzst performs the following operations for each platform:
 
 1. Run `go build` with `GOOS` and `GOARCH` environment variables.
 1. Archive the executable file into a zip file.
-1. Generate SHA-256 digest of the zip file.
+1. Generate the digest of the zip file.
 
 and optionally renders the templates.
 Finally it removes the executable files.
@@ -89,6 +91,14 @@ You can add extra files to the zip by `-i` option:
 goxzst -o hello -i "LICENSE README.md"
 ```
 
+### Digest
+
+You can set the digest algorithm by `-a` option:
+
+```sh
+goxzst -o hello -a sha512
+```
+
 ### Template
 
 You can pass template files by `-t` option:
@@ -105,7 +115,11 @@ You can use the following functions and variables in a template.
 Name | Description | Example
 -----|-------------|--------
 `env(string) string`        | Value of the environment variable. | `env "VERSION"`
-`.GOOS_GOARCH_zip_sha256`   | SHA-256 digest of the zip file.    | `.linux_amd64_zip_sha256`
+`sha256(string) string`     | SHA-256 digest of the file.        | `sha256 .linux_amd64_archive`
+`sha512(string) string`     | SHA-512 digest of the file.        | `sha512 .linux_amd64_archive`
+`.GOOS_GOARCH_executable`   | Path to the executable file.       | `.linux_amd64_executable`
+`.GOOS_GOARCH_archive`      | Path to the archive file.          | `.linux_amd64_archive`
+`.GOOS_GOARCH_digest`       | Path to the digest file.           | `.linux_amd64_digest`
 
 See also the examples: [homebrew.rb](usecases/testdata/homebrew.rb) and [krew.yaml](usecases/testdata/krew.yaml).
 

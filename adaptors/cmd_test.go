@@ -6,6 +6,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/int128/goxzst/adaptors/mock_adaptors"
 	"github.com/int128/goxzst/models/build"
+	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases/interfaces"
 	"github.com/int128/goxzst/usecases/mock_usecases"
 )
@@ -38,10 +39,11 @@ func TestCmd_Run(t *testing.T) {
 		makeUseCase := mock_usecases.NewMockMake(ctrl)
 		makeUseCase.EXPECT().
 			Do(usecases.MakeIn{
-				OutputDir:   "dist",
-				OutputName:  "hello",
-				Platforms:   defaultPlatforms,
-				GoBuildArgs: []string{},
+				OutputDir:       "dist",
+				OutputName:      "hello",
+				Platforms:       defaultPlatforms,
+				GoBuildArgs:     []string{},
+				DigestAlgorithm: digest.SHA256,
 			})
 
 		cmd := Cmd{
@@ -61,10 +63,11 @@ func TestCmd_Run(t *testing.T) {
 		makeUseCase := mock_usecases.NewMockMake(ctrl)
 		makeUseCase.EXPECT().
 			Do(usecases.MakeIn{
-				OutputDir:   "dist",
-				OutputName:  "hello",
-				Platforms:   defaultPlatforms,
-				GoBuildArgs: []string{"-ldflags", "-X foo=bar"},
+				OutputDir:       "dist",
+				OutputName:      "hello",
+				Platforms:       defaultPlatforms,
+				GoBuildArgs:     []string{"-ldflags", "-X foo=bar"},
+				DigestAlgorithm: digest.SHA256,
 			})
 
 		cmd := Cmd{
@@ -89,7 +92,8 @@ func TestCmd_Run(t *testing.T) {
 				Platforms: []build.Platform{
 					{GOOS: "linux", GOARCH: "arm"},
 				},
-				GoBuildArgs: []string{},
+				GoBuildArgs:     []string{},
+				DigestAlgorithm: digest.SHA256,
 			})
 
 		cmd := Cmd{
@@ -114,6 +118,7 @@ func TestCmd_Run(t *testing.T) {
 				Platforms:             defaultPlatforms,
 				GoBuildArgs:           []string{},
 				ArchiveExtraFilenames: []string{"README.md", "LICENSE"},
+				DigestAlgorithm:       digest.SHA256,
 			})
 
 		cmd := Cmd{
@@ -122,6 +127,30 @@ func TestCmd_Run(t *testing.T) {
 			Env:    mock_adaptors.NewMockEnv(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-i", "README.md LICENSE"}, version)
+		if exitCode != 0 {
+			t.Errorf("exitCode wants 0 but %d", exitCode)
+		}
+	})
+
+	t.Run("WithDigestAlgorithm", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		makeUseCase := mock_usecases.NewMockMake(ctrl)
+		makeUseCase.EXPECT().
+			Do(usecases.MakeIn{
+				OutputDir:       "dist",
+				OutputName:      "hello",
+				Platforms:       defaultPlatforms,
+				GoBuildArgs:     []string{},
+				DigestAlgorithm: digest.SHA512,
+			})
+
+		cmd := Cmd{
+			Make:   makeUseCase,
+			Logger: mock_adaptors.NewLogger(t),
+			Env:    mock_adaptors.NewMockEnv(ctrl),
+		}
+		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-a", "sha512"}, version)
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}
@@ -137,6 +166,7 @@ func TestCmd_Run(t *testing.T) {
 				OutputName:        "hello",
 				Platforms:         defaultPlatforms,
 				GoBuildArgs:       []string{},
+				DigestAlgorithm:   digest.SHA256,
 				TemplateFilenames: []string{"template1", "template2"},
 			})
 

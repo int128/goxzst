@@ -139,11 +139,10 @@ func (m *MockDigest) EXPECT() *MockDigestMockRecorder {
 }
 
 // Do mocks base method
-func (m *MockDigest) Do(arg0 interfaces.DigestIn) (*interfaces.DigestOut, error) {
+func (m *MockDigest) Do(arg0 interfaces.DigestIn) error {
 	ret := m.ctrl.Call(m, "Do", arg0)
-	ret0, _ := ret[0].(*interfaces.DigestOut)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Do indicates an expected call of Do

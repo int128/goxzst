@@ -6,10 +6,10 @@ spec:
   shortDescription: An example of kubectl plugin
   description: An example of kubectl plugin
   homepage: https://github.com/int128/goxzst
-  version: {{ env "VERSION" }}
+  version: v1.0.0
   platforms:
-    - uri: https://github.com/int128/goxzst/releases/download/{{ env "VERSION" }}/goxzst_linux_amd64.zip
-      sha256: "{{ sha256 .linux_amd64_archive }}"
+    - uri: https://github.com/int128/goxzst/releases/download/v1.0.0/goxzst_linux_amd64.zip
+      sha256: "fe8df1a5a1980493ca9406ad3bb0e41297d979d90165a181fb39a5616a1c0789"
       bin: goxzst
       files:
         - from: goxzst
@@ -18,8 +18,8 @@ spec:
         matchLabels:
           os: linux
           arch: amd64
-    - uri: https://github.com/int128/goxzst/releases/download/{{ env "VERSION" }}/goxzst_darwin_amd64.zip
-      sha256: "{{ sha256 .darwin_amd64_archive }}"
+    - uri: https://github.com/int128/goxzst/releases/download/v1.0.0/goxzst_darwin_amd64.zip
+      sha256: "fd848ca35a6281600b5da598c7cb4d5df561e0ee63ee7cec0e98e6049996f3ff"
       bin: goxzst
       files:
         - from: goxzst
@@ -28,8 +28,8 @@ spec:
         matchLabels:
           os: darwin
           arch: amd64
-    - uri: https://github.com/int128/goxzst/releases/download/{{ env "VERSION" }}/goxzst_windows_amd64.zip
-      sha256: "{{ sha256 .windows_amd64_archive }}"
+    - uri: https://github.com/int128/goxzst/releases/download/v1.0.0/goxzst_windows_amd64.zip
+      sha256: "e80a628c53559e15e9da08556dae1245eeb850dcc27412b5f672f2a075f66930"
       bin: goxzst
       files:
         - from: goxzst.exe

@@ -20,6 +20,10 @@ type Make struct {
 }
 
 func (u *Make) Do(in usecases.MakeIn) error {
+	if in.DigestAlgorithm == nil {
+		return errors.New("DigestAlgorithm must be non-nil")
+	}
+
 	var buildOuts []*buildOut
 	for _, platform := range in.Platforms {
 		out, err := u.build(in, platform)
@@ -31,8 +35,12 @@ func (u *Make) Do(in usecases.MakeIn) error {
 
 	templateVariables := make(map[string]string)
 	for _, buildOut := range buildOuts {
-		templateVariables[fmt.Sprintf("%s_%s_zip_sha256", buildOut.platform.GOOS, buildOut.platform.GOARCH)] =
-			buildOut.digestOut.SHA256
+		templateVariables[fmt.Sprintf("%s_%s_executable", buildOut.platform.GOOS, buildOut.platform.GOARCH)] =
+			buildOut.executableFile.Name()
+		templateVariables[fmt.Sprintf("%s_%s_archive", buildOut.platform.GOOS, buildOut.platform.GOARCH)] =
+			buildOut.archiveFile.Name()
+		templateVariables[fmt.Sprintf("%s_%s_digest", buildOut.platform.GOOS, buildOut.platform.GOARCH)] =
+			buildOut.digestFile.Name()
 	}
 	for _, t := range in.TemplateFilenames {
 		if err := u.RenderTemplate.Do(usecases.RenderTemplateIn{
@@ -45,18 +53,20 @@ func (u *Make) Do(in usecases.MakeIn) error {
 	}
 
 	for _, buildOut := range buildOuts {
-		u.Logger.Logf("Removing %s", buildOut.executableFilename)
-		if err := u.FileSystem.Remove(buildOut.executableFilename); err != nil {
-			return errors.Wrapf(err, "error while removing %s", buildOut.executableFilename)
+		name := buildOut.executableFile.Name()
+		u.Logger.Logf("Removing %s", name)
+		if err := u.FileSystem.Remove(name); err != nil {
+			return errors.Wrapf(err, "error while removing %s", name)
 		}
 	}
 	return nil
 }
 
 type buildOut struct {
-	platform           build.Platform
-	executableFilename string
-	digestOut          *usecases.DigestOut
+	platform       build.Platform
+	executableFile build.ExecutableFile
+	archiveFile    build.ArchiveFile
+	digestFile     build.DigestFile
 }
 
 func (u *Make) build(in usecases.MakeIn, platform build.Platform) (*buildOut, error) {
@@ -101,19 +111,20 @@ func (u *Make) build(in usecases.MakeIn, platform build.Platform) (*buildOut, er
 
 	digestFile := build.DigestFile{
 		Base:   archiveFile.Name(),
-		Suffix: ".sha256",
+		Suffix: in.DigestAlgorithm.Suffix,
 	}
-	digestOut, err := u.Digest.Do(usecases.DigestIn{
+	if err := u.Digest.Do(usecases.DigestIn{
 		InputFilename:  archiveFile.Name(),
 		OutputFilename: digestFile.Name(),
-	})
-	if err != nil {
+		Algorithm:      in.DigestAlgorithm,
+	}); err != nil {
 		return nil, errors.Wrapf(err, "error while digest")
 	}
 
 	return &buildOut{
-		platform:           platform,
-		executableFilename: builtExecutableFile.Name(),
-		digestOut:          digestOut,
+		platform:       platform,
+		executableFile: builtExecutableFile,
+		archiveFile:    archiveFile,
+		digestFile:     digestFile,
 	}, nil
 }

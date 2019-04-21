@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/int128/goxzst/adaptors/mock_adaptors"
+	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases/interfaces"
 )
 
@@ -29,11 +30,11 @@ func TestDigest_Do(t *testing.T) {
 		FileSystem: filesystem,
 		Logger:     mock_adaptors.NewLogger(t),
 	}
-	out, err := u.Do(usecases.DigestIn{
+	if err := u.Do(usecases.DigestIn{
 		InputFilename:  "input1",
 		OutputFilename: "dist/output",
-	})
-	if err != nil {
+		Algorithm:      digest.SHA256,
+	}); err != nil {
 		t.Errorf("Do returned error: %+v", err)
 	}
 
@@ -41,8 +42,5 @@ func TestDigest_Do(t *testing.T) {
 	const text1SHA256 = "fe8df1a5a1980493ca9406ad3bb0e41297d979d90165a181fb39a5616a1c0789"
 	if b.String() != text1SHA256 {
 		t.Errorf("output file content wants %s but %s", text1SHA256, b.String())
-	}
-	if out.SHA256 != text1SHA256 {
-		t.Errorf("SHA256 wants %s but %s", text1SHA256, out.SHA256)
 	}
 }
