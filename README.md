@@ -1,30 +1,16 @@
 # goxzst [![CircleCI](https://circleci.com/gh/int128/goxzst.svg?style=shield)](https://circleci.com/gh/int128/goxzst)
 
-This is a command for cross build, ZIP archive, SHA digest and template rendering.
+This is a command for Go cross build, ZIP archive, SHA digest and template rendering.
+
+**Status**: Beta. The options may be changed in the future.
 
 
 ## Getting Started
 
-Install [the latest release](https://github.com/int128/goxzst/releases):
+Install by go get or from [the latest release](https://github.com/int128/goxzst/releases).
 
 ```sh
-curl -LO https://github.com/int128/goxzst/releases/download/v0.2.0/goxzst_linux_amd64.zip
-unzip -d ~/bin goxzst_linux_amd64.zip
-```
-
-For CircleCI:
-
-```yaml
-version: 2
-jobs:
-  build:
-    steps:
-      - run: |
-          mkdir -p ~/bin
-          echo 'export PATH="$HOME/bin:$PATH"' >> $BASH_ENV
-      - run: |
-          curl -L -o ~/goxzst_linux_amd64.zip https://github.com/int128/goxzst/releases/download/v0.2.0/goxzst_linux_amd64.zip
-          unzip -d ~/bin ~/goxzst_linux_amd64.zip
+go get github.com/int128/goxzst
 ```
 
 To make cross build, zip and sha256:
@@ -44,7 +30,7 @@ dist/hello_windows_amd64.zip
 dist/hello_windows_amd64.zip.sha256
 ```
 
-Each zip file contains an executable file as follows:
+Each archive file contains the executable file as follows:
 
 ```
 % zipinfo dist/hello_linux_amd64.zip
@@ -80,9 +66,9 @@ Options:
 
 goxzst performs the following operations for each platform:
 
-1. Run `go build` with `GOOS` and `GOARCH` environment variables.
-1. Archive the executable file into a zip file.
-1. Generate the digest of the zip file.
+1. Build an executable file for the platform.
+1. Pack the executable file into an archive file.
+1. Generate the digest of the archive file.
 
 and optionally renders the templates.
 Finally it removes the executable files.
@@ -103,7 +89,7 @@ goxzst -o hello -- -ldflags "-X main.version=$VERSION"
 
 ### Archive
 
-You can add extra files to the zip by `-i` option:
+You can add extra files to the archive file by `-i` option:
 
 ```sh
 goxzst -o hello -i "LICENSE README.md"
@@ -139,7 +125,13 @@ Name | Description | Example
 `.GOOS_GOARCH_archive`      | Path to the archive file.          | `.linux_amd64_archive`
 `.GOOS_GOARCH_digest`       | Path to the digest file.           | `.linux_amd64_digest`
 
-See also the examples: [homebrew.rb](usecases/testdata/homebrew.rb) and [krew.yaml](usecases/testdata/krew.yaml).
+For example, you can render SHA-256 digest of the archive file as follows:
+
+```gotemplate
+{{ sha256 .linux_amd64_archive }}
+```
+
+See also the examples of [homebrew.rb](usecases/testdata/homebrew.rb) and [krew.yaml](usecases/testdata/krew.yaml).
 
 
 ## Contributions
