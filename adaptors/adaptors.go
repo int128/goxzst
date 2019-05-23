@@ -1,17 +1,35 @@
-// Package adaptors provides bridge between use-cases and external infrastructure.
 package adaptors
 
 import (
-	"github.com/google/wire"
-	"github.com/int128/goxzst/adaptors/interfaces"
+	"io"
+	"os"
 )
 
-var Set = wire.NewSet(
-	Cmd{},
-	Env{},
-	FileSystem{},
-	Logger{},
-	wire.Bind((*adaptors.Env)(nil), (*Env)(nil)),
-	wire.Bind((*adaptors.FileSystem)(nil), (*FileSystem)(nil)),
-	wire.Bind((*adaptors.Logger)(nil), (*Logger)(nil)),
-)
+//go:generate mockgen -destination mock_adaptors/mock_adaptors.go github.com/int128/goxzst/adaptors Env,FileSystem
+
+type Cmd interface {
+	Run(args []string, version string) int
+}
+
+type Logger interface {
+	Logf(format string, v ...interface{})
+}
+
+type Env interface {
+	LookupEnv(key string) (string, bool)
+	Exec(in ExecIn) error
+}
+
+type ExecIn struct {
+	Name     string
+	Args     []string
+	ExtraEnv []string
+}
+
+type FileSystem interface {
+	Open(name string) (io.ReadCloser, error)
+	Create(name string) (io.WriteCloser, error)
+	Remove(name string) error
+	Stat(name string) (os.FileInfo, error)
+	MkdirAll(path string) error
+}

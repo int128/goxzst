@@ -1,16 +1,11 @@
-package adaptors
+package fs
 
 import (
 	"io"
 	"os"
 
-	"github.com/int128/goxzst/adaptors/interfaces"
 	"github.com/pkg/errors"
 )
-
-func NewFileSystem() adaptors.FileSystem {
-	return &FileSystem{}
-}
 
 type FileSystem struct{}
 

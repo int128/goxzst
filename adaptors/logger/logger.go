@@ -1,9 +1,9 @@
-package adaptors
+package logger
 
 import (
 	"log"
 
-	"github.com/int128/goxzst/adaptors/interfaces"
+	"github.com/int128/goxzst/adaptors"
 )
 
 func NewLogger() adaptors.Logger {

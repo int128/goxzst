@@ -1,4 +1,4 @@
-package usecases
+package templates
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/int128/goxzst/adaptors/mock_adaptors"
-	"github.com/int128/goxzst/usecases/interfaces"
+	"github.com/int128/goxzst/usecases"
 	"github.com/pkg/errors"
 )
 

@@ -1,20 +1,66 @@
-// Package usecases provides use-cases.
 package usecases
 
 import (
-	"github.com/google/wire"
-	"github.com/int128/goxzst/usecases/interfaces"
+	"github.com/int128/goxzst/models/build"
+	"github.com/int128/goxzst/models/digest"
 )
 
-var Set = wire.NewSet(
-	Make{},
-	Archive{},
-	CrossBuild{},
-	Digest{},
-	RenderTemplate{},
-	wire.Bind((*usecases.Make)(nil), (*Make)(nil)),
-	wire.Bind((*usecases.Archive)(nil), (*Archive)(nil)),
-	wire.Bind((*usecases.CrossBuild)(nil), (*CrossBuild)(nil)),
-	wire.Bind((*usecases.Digest)(nil), (*Digest)(nil)),
-	wire.Bind((*usecases.RenderTemplate)(nil), (*RenderTemplate)(nil)),
-)
+//go:generate mockgen -destination mock_usecases/mock_usecases.go github.com/int128/goxzst/usecases Make,CrossBuild,Archive,Digest,RenderTemplate
+
+type Make interface {
+	Do(in MakeIn) error
+}
+
+type MakeIn struct {
+	OutputDir             string // optional
+	OutputName            string
+	Platforms             []build.Platform
+	GoBuildArgs           []string
+	ArchiveExtraFilenames []string
+	DigestAlgorithm       *digest.Algorithm
+	TemplateFilenames     []string
+}
+
+type CrossBuild interface {
+	Do(in CrossBuildIn) error
+}
+
+type CrossBuildIn struct {
+	OutputFilename string
+	GoBuildArgs    []string
+	Platform       build.Platform
+}
+
+type Archive interface {
+	Do(in ArchiveIn) error
+}
+
+type ArchiveIn struct {
+	OutputFilename string
+	Entries        []ArchiveEntry
+}
+
+type ArchiveEntry struct {
+	Filename      string // filename in the archive
+	InputFilename string
+}
+
+type Digest interface {
+	Do(in DigestIn) error
+}
+
+type DigestIn struct {
+	InputFilename  string
+	OutputFilename string
+	Algorithm      *digest.Algorithm
+}
+
+type RenderTemplate interface {
+	Do(in RenderTemplateIn) error
+}
+
+type RenderTemplateIn struct {
+	InputFilename  string
+	OutputFilename string
+	Variables      map[string]string
+}

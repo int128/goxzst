@@ -1,4 +1,4 @@
-package usecases
+package makeall
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	"github.com/int128/goxzst/adaptors/mock_adaptors"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/int128/goxzst/usecases/interfaces"
+	"github.com/int128/goxzst/usecases"
 	"github.com/int128/goxzst/usecases/mock_usecases"
 )
 

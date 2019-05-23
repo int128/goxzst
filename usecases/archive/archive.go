@@ -1,12 +1,12 @@
-package usecases
+package archive
 
 import (
 	"archive/zip"
 	"io"
 	"path/filepath"
 
-	"github.com/int128/goxzst/adaptors/interfaces"
-	"github.com/int128/goxzst/usecases/interfaces"
+	"github.com/int128/goxzst/adaptors"
+	"github.com/int128/goxzst/usecases"
 	"github.com/pkg/errors"
 )
 

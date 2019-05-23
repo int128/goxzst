@@ -1,14 +1,14 @@
-package adaptors
+package cmd
 
 import (
 	"flag"
 	"fmt"
 	"strings"
 
-	"github.com/int128/goxzst/adaptors/interfaces"
+	"github.com/int128/goxzst/adaptors"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/int128/goxzst/usecases/interfaces"
+	"github.com/int128/goxzst/usecases"
 	"github.com/pkg/errors"
 )
 

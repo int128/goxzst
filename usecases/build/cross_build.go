@@ -1,12 +1,12 @@
-package usecases
+package build
 
 import (
 	"fmt"
 	"path/filepath"
 	"strings"
 
-	"github.com/int128/goxzst/adaptors/interfaces"
-	"github.com/int128/goxzst/usecases/interfaces"
+	"github.com/int128/goxzst/adaptors"
+	"github.com/int128/goxzst/usecases"
 	"github.com/pkg/errors"
 )
 

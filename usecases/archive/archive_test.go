@@ -1,4 +1,4 @@
-package usecases
+package archive
 
 import (
 	"archive/zip"
@@ -11,7 +11,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/int128/goxzst/adaptors/mock_adaptors"
-	"github.com/int128/goxzst/usecases/interfaces"
+	"github.com/int128/goxzst/usecases"
 )
 
 func TestArchive_Do(t *testing.T) {

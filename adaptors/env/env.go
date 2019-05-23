@@ -1,10 +1,10 @@
-package adaptors
+package env
 
 import (
 	"os"
 	"os/exec"
 
-	"github.com/int128/goxzst/adaptors/interfaces"
+	"github.com/int128/goxzst/adaptors"
 	"github.com/pkg/errors"
 )
 

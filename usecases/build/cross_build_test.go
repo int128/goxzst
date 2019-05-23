@@ -1,13 +1,13 @@
-package usecases
+package build
 
 import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/int128/goxzst/adaptors/interfaces"
+	"github.com/int128/goxzst/adaptors"
 	"github.com/int128/goxzst/adaptors/mock_adaptors"
 	"github.com/int128/goxzst/models/build"
-	"github.com/int128/goxzst/usecases/interfaces"
+	"github.com/int128/goxzst/usecases"
 )
 
 func TestCrossBuild_Do(t *testing.T) {

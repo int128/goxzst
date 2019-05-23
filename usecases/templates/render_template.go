@@ -1,4 +1,4 @@
-package usecases
+package templates
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/int128/goxzst/adaptors/interfaces"
+	"github.com/int128/goxzst/adaptors"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/int128/goxzst/usecases/interfaces"
+	"github.com/int128/goxzst/usecases"
 	"github.com/pkg/errors"
 )
 

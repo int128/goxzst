@@ -3,7 +3,7 @@ package mock_adaptors
 import (
 	"testing"
 
-	"github.com/int128/goxzst/adaptors/interfaces"
+	"github.com/int128/goxzst/adaptors"
 )
 
 // NewLogger returns a Logger for testing.
