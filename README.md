@@ -6,7 +6,7 @@ It also renders templates for some manifests such as Homebrew Formula and Krew.
 
 ## Getting Started
 
-Just go get or download [the latest release](https://github.com/int128/goxzst/releases).
+go get or download [the latest release](https://github.com/int128/goxzst/releases).
 
 ```sh
 go get github.com/int128/goxzst
@@ -130,7 +130,7 @@ For example, you can render SHA-256 digest of the archive file as follows:
 {{ sha256 .linux_amd64_archive }}
 ```
 
-See also the examples of [homebrew.rb](usecases/testdata/homebrew.rb) and [krew.yaml](usecases/testdata/krew.yaml).
+See also the examples: [homebrew.rb](usecases/templates/testdata/homebrew.rb) and [krew.yaml](usecases/templates/testdata/krew.yaml).
 
 
 ## Related works
