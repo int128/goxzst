@@ -1,25 +1,24 @@
 # goxzst [![CircleCI](https://circleci.com/gh/int128/goxzst.svg?style=shield)](https://circleci.com/gh/int128/goxzst)
 
-This is a command for Go cross build, ZIP archive, SHA digest and template rendering.
-
-**Status**: Beta. The options may be changed in the future.
+This is a command to make cross build, ZIP archives, SHA digests.
+It also renders templates for some manifests such as Homebrew Formula and Krew.
 
 
 ## Getting Started
 
-Install by go get or from [the latest release](https://github.com/int128/goxzst/releases).
+Just go get or download [the latest release](https://github.com/int128/goxzst/releases).
 
 ```sh
 go get github.com/int128/goxzst
 ```
 
-To make cross build, zip and sha256:
+To make zip and sha256 files for the default target platforms:
 
 ```sh
 goxzst -o hello
 ```
 
-It will create the following files:
+and you will get:
 
 ```
 dist/hello_darwin_amd64.zip
@@ -30,7 +29,7 @@ dist/hello_windows_amd64.zip
 dist/hello_windows_amd64.zip.sha256
 ```
 
-Each archive file contains the executable file as follows:
+Each zip file contains the executable file as follows:
 
 ```
 % zipinfo dist/hello_linux_amd64.zip
@@ -64,7 +63,7 @@ Options:
     	List of template files separated by space
 ```
 
-goxzst performs the following operations for each platform:
+goxzst does the following steps for each platform:
 
 1. Build an executable file for the platform.
 1. Pack the executable file into an archive file.
@@ -132,6 +131,12 @@ For example, you can render SHA-256 digest of the archive file as follows:
 ```
 
 See also the examples of [homebrew.rb](usecases/testdata/homebrew.rb) and [krew.yaml](usecases/testdata/krew.yaml).
+
+
+## Related works
+
+This is inspired by [Songmu/goxz](https://github.com/Songmu/goxz).
+Thank you for the great work.
 
 
 ## Contributions
