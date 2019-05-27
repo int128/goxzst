@@ -1,7 +1,7 @@
 # goxzst [![CircleCI](https://circleci.com/gh/int128/goxzst.svg?style=shield)](https://circleci.com/gh/int128/goxzst)
 
 This is a command to make cross build, ZIP archives, SHA digests.
-It also renders templates for some manifests such as Homebrew Formula and Krew.
+It also renders manifest templates such as Homebrew and Krew.
 
 
 ## Getting Started
@@ -12,13 +12,13 @@ go get or download [the latest release](https://github.com/int128/goxzst/release
 go get github.com/int128/goxzst
 ```
 
-To make zip and sha256 files for the default target platforms:
+To make `.zip` and `.sha256` files for the default target platforms:
 
 ```sh
 goxzst -o hello
 ```
 
-and you will get:
+goxzst will make the following files:
 
 ```
 dist/hello_darwin_amd64.zip
@@ -29,7 +29,7 @@ dist/hello_windows_amd64.zip
 dist/hello_windows_amd64.zip.sha256
 ```
 
-Each zip file contains the executable file as follows:
+Each zip file contains the executable file:
 
 ```
 % zipinfo dist/hello_linux_amd64.zip
@@ -37,6 +37,24 @@ Archive:  dist/hello_linux_amd64.zip
 Zip file size: 2040916 bytes, number of entries: 1
 -rwxr-xr-x  2.0 unx  4100026 bl defN 19-Apr-04 14:44 hello
 1 file, 4100026 bytes uncompressed, 2040792 bytes compressed:  50.2%
+```
+
+To make a Homebrew Formula, create [homebrew.rb](usecases/templates/testdata/homebrew.rb) and run:
+
+```sh
+goxzst -o hello -t homebrew.rb
+```
+
+goxzst will make the following files:
+
+```
+dist/hello_darwin_amd64.zip
+dist/hello_darwin_amd64.zip.sha256
+dist/hello_linux_amd64.zip
+dist/hello_linux_amd64.zip.sha256
+dist/hello_windows_amd64.zip
+dist/hello_windows_amd64.zip.sha256
+dist/homebrew.rb
 ```
 
 
