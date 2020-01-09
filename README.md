@@ -3,6 +3,8 @@
 This is a command to make cross builds, ZIP archives, SHA digests.
 As well as it can render templates, for example, Homebrew formula and Kubernetes Krew yaml.
 
+goxzst is an abbreviation of the following letters:
+
 - X (cross builds)
 - Z (ZIP archives)
 - S (SHA digests)
@@ -18,7 +20,7 @@ Install [the latest release](https://github.com/int128/goxzst/releases).
 go get github.com/int128/goxzst
 
 # GitHub Releases
-curl -sfL -o /tmp/goxzst.zip https://github.com/int128/ghcp/releases/download/v0.3.0/goxzst_linux_amd64.zip
+curl -sfL -o /tmp/goxzst.zip https://github.com/int128/goxzst/releases/download/v0.3.0/goxzst_linux_amd64.zip
 unzip /tmp/goxzst.zip -d ~/bin
 ```
 
