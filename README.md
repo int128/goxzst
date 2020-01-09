@@ -1,15 +1,25 @@
 # goxzst [![CircleCI](https://circleci.com/gh/int128/goxzst.svg?style=shield)](https://circleci.com/gh/int128/goxzst)
 
-This is a command to make cross build, ZIP archives, SHA digests.
-It also renders manifest templates such as Homebrew and Krew.
+This is a command to make cross builds, ZIP archives, SHA digests.
+As well as it can render templates, for example, Homebrew formula and Kubernetes Krew yaml.
+
+- X (cross builds)
+- Z (ZIP archives)
+- S (SHA digests)
+- T (templates)
 
 
 ## Getting Started
 
-go get or download [the latest release](https://github.com/int128/goxzst/releases).
+Install [the latest release](https://github.com/int128/goxzst/releases).
 
 ```sh
+# go
 go get github.com/int128/goxzst
+
+# GitHub Releases
+curl -sfL -o /tmp/goxzst.zip https://github.com/int128/ghcp/releases/download/v0.3.0/goxzst_linux_amd64.zip
+unzip /tmp/goxzst.zip -d ~/bin
 ```
 
 To make `.zip` and `.sha256` files for the default target platforms:
