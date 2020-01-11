@@ -5,3 +5,5 @@ require (
 	github.com/google/wire v0.2.1
 	github.com/pkg/errors v0.8.1
 )
+
+go 1.13
