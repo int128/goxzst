@@ -35,6 +35,7 @@ func (m *MockMake) EXPECT() *MockMakeMockRecorder {
 
 // Do mocks base method
 func (m *MockMake) Do(arg0 usecases.MakeIn) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Do", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -42,6 +43,7 @@ func (m *MockMake) Do(arg0 usecases.MakeIn) error {
 
 // Do indicates an expected call of Do
 func (mr *MockMakeMockRecorder) Do(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockMake)(nil).Do), arg0)
 }
 
@@ -70,6 +72,7 @@ func (m *MockCrossBuild) EXPECT() *MockCrossBuildMockRecorder {
 
 // Do mocks base method
 func (m *MockCrossBuild) Do(arg0 usecases.CrossBuildIn) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Do", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -77,6 +80,7 @@ func (m *MockCrossBuild) Do(arg0 usecases.CrossBuildIn) error {
 
 // Do indicates an expected call of Do
 func (mr *MockCrossBuildMockRecorder) Do(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockCrossBuild)(nil).Do), arg0)
 }
 
@@ -105,6 +109,7 @@ func (m *MockArchive) EXPECT() *MockArchiveMockRecorder {
 
 // Do mocks base method
 func (m *MockArchive) Do(arg0 usecases.ArchiveIn) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Do", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -112,6 +117,7 @@ func (m *MockArchive) Do(arg0 usecases.ArchiveIn) error {
 
 // Do indicates an expected call of Do
 func (mr *MockArchiveMockRecorder) Do(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockArchive)(nil).Do), arg0)
 }
 
@@ -140,6 +146,7 @@ func (m *MockDigest) EXPECT() *MockDigestMockRecorder {
 
 // Do mocks base method
 func (m *MockDigest) Do(arg0 usecases.DigestIn) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Do", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -147,6 +154,7 @@ func (m *MockDigest) Do(arg0 usecases.DigestIn) error {
 
 // Do indicates an expected call of Do
 func (mr *MockDigestMockRecorder) Do(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockDigest)(nil).Do), arg0)
 }
 
@@ -175,6 +183,7 @@ func (m *MockRenderTemplate) EXPECT() *MockRenderTemplateMockRecorder {
 
 // Do mocks base method
 func (m *MockRenderTemplate) Do(arg0 usecases.RenderTemplateIn) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Do", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -182,5 +191,6 @@ func (m *MockRenderTemplate) Do(arg0 usecases.RenderTemplateIn) error {
 
 // Do indicates an expected call of Do
 func (mr *MockRenderTemplateMockRecorder) Do(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockRenderTemplate)(nil).Do), arg0)
 }
