@@ -5,27 +5,48 @@ import (
 	"path/filepath"
 
 	"github.com/google/wire"
-	"github.com/int128/goxzst/adaptors"
+	"github.com/int128/goxzst/adaptors/fs"
+	"github.com/int128/goxzst/adaptors/logger"
 	"github.com/int128/goxzst/models/build"
-	"github.com/int128/goxzst/usecases"
+	"github.com/int128/goxzst/models/digest"
+	"github.com/int128/goxzst/usecases/archive"
+	build2 "github.com/int128/goxzst/usecases/crossbuild"
+	digest2 "github.com/int128/goxzst/usecases/digest"
+	"github.com/int128/goxzst/usecases/rendertemplate"
 	"github.com/pkg/errors"
 )
 
 var Set = wire.NewSet(
-	wire.Struct(new(Make), "*"),
-	wire.Bind(new(usecases.Make), new(*Make)),
+	wire.Struct(new(MakeAll), "*"),
+	wire.Bind(new(Interface), new(*MakeAll)),
 )
 
-type Make struct {
-	CrossBuild     usecases.CrossBuild
-	Archive        usecases.Archive
-	Digest         usecases.Digest
-	RenderTemplate usecases.RenderTemplate
-	FileSystem     adaptors.FileSystem
-	Logger         adaptors.Logger
+//go:generate mockgen -destination mock_makeall/mock_makeall.go github.com/int128/goxzst/usecases/makeall Interface
+
+type Interface interface {
+	Do(in Input) error
 }
 
-func (u *Make) Do(in usecases.MakeIn) error {
+type Input struct {
+	OutputDir             string // optional
+	OutputName            string
+	Platforms             []build.Platform
+	GoBuildArgs           []string
+	ArchiveExtraFilenames []string
+	DigestAlgorithm       *digest.Algorithm
+	TemplateFilenames     []string
+}
+
+type MakeAll struct {
+	CrossBuild     build2.Interface
+	Archive        archive.Interface
+	Digest         digest2.Interface
+	RenderTemplate rendertemplate.Interface
+	FileSystem     fs.Interface
+	Logger         logger.Interface
+}
+
+func (u *MakeAll) Do(in Input) error {
 	if in.DigestAlgorithm == nil {
 		return errors.New("DigestAlgorithm must be non-nil")
 	}
@@ -49,7 +70,7 @@ func (u *Make) Do(in usecases.MakeIn) error {
 			buildOut.digestFile.Name()
 	}
 	for _, t := range in.TemplateFilenames {
-		if err := u.RenderTemplate.Do(usecases.RenderTemplateIn{
+		if err := u.RenderTemplate.Do(rendertemplate.Input{
 			InputFilename:  t,
 			OutputFilename: filepath.Join(in.OutputDir, filepath.Base(t)),
 			Variables:      templateVariables,
@@ -75,14 +96,14 @@ type buildOut struct {
 	digestFile     build.DigestFile
 }
 
-func (u *Make) build(in usecases.MakeIn, platform build.Platform) (*buildOut, error) {
+func (u *MakeAll) build(in Input, platform build.Platform) (*buildOut, error) {
 	basename := filepath.Join(in.OutputDir, fmt.Sprintf("%s_%s_%s", in.OutputName, platform.GOOS, platform.GOARCH))
 
 	builtExecutableFile := build.ExecutableFile{
 		Base:     basename,
 		Platform: platform,
 	}
-	if err := u.CrossBuild.Do(usecases.CrossBuildIn{
+	if err := u.CrossBuild.Do(build2.Input{
 		OutputFilename: builtExecutableFile.Name(),
 		GoBuildArgs:    in.GoBuildArgs,
 		Platform:       platform,
@@ -98,17 +119,17 @@ func (u *Make) build(in usecases.MakeIn, platform build.Platform) (*buildOut, er
 		Base:     in.OutputName,
 		Platform: platform,
 	}
-	archiveEntries := []usecases.ArchiveEntry{{
+	archiveEntries := []archive.Entry{{
 		Filename:      executableInArchive.Name(),
 		InputFilename: builtExecutableFile.Name(),
 	}}
 	for _, f := range in.ArchiveExtraFilenames {
-		archiveEntries = append(archiveEntries, usecases.ArchiveEntry{
+		archiveEntries = append(archiveEntries, archive.Entry{
 			Filename:      f,
 			InputFilename: f,
 		})
 	}
-	if err := u.Archive.Do(usecases.ArchiveIn{
+	if err := u.Archive.Do(archive.Input{
 		OutputFilename: archiveFile.Name(),
 		Entries:        archiveEntries,
 	}); err != nil {
@@ -119,7 +140,7 @@ func (u *Make) build(in usecases.MakeIn, platform build.Platform) (*buildOut, er
 		Base:   archiveFile.Name(),
 		Suffix: in.DigestAlgorithm.Suffix,
 	}
-	if err := u.Digest.Do(usecases.DigestIn{
+	if err := u.Digest.Do(digest2.Input{
 		InputFilename:  archiveFile.Name(),
 		OutputFilename: digestFile.Name(),
 		Algorithm:      in.DigestAlgorithm,

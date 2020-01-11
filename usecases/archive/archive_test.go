@@ -10,16 +10,17 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/int128/goxzst/adaptors/mock_adaptors"
-	"github.com/int128/goxzst/usecases"
+	"github.com/int128/goxzst/adaptors/fs/mock_fs"
+	testingFs "github.com/int128/goxzst/adaptors/fs/testing"
+	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
 )
 
 func TestArchive_Do(t *testing.T) {
-	fileInfo1 := mock_adaptors.FileInfo{
+	fileInfo1 := testingFs.FileInfo{
 		ModeValue:    0644,
 		ModTimeValue: time.Date(2019, 4, 1, 2, 3, 4, 0, time.UTC),
 	}
-	fileInfo2 := mock_adaptors.FileInfo{
+	fileInfo2 := testingFs.FileInfo{
 		ModeValue:    0755,
 		ModTimeValue: time.Date(2019, 4, 9, 8, 7, 6, 0, time.UTC),
 	}
@@ -27,8 +28,8 @@ func TestArchive_Do(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	var b mock_adaptors.WriteBuffer
-	filesystem := mock_adaptors.NewMockFileSystem(ctrl)
+	var b testingFs.WriteBuffer
+	filesystem := mock_fs.NewMockInterface(ctrl)
 	filesystem.EXPECT().
 		MkdirAll("dist")
 	filesystem.EXPECT().
@@ -49,11 +50,11 @@ func TestArchive_Do(t *testing.T) {
 
 	u := Archive{
 		FileSystem: filesystem,
-		Logger:     mock_adaptors.NewLogger(t),
+		Logger:     testingLogger.New(t),
 	}
-	if err := u.Do(usecases.ArchiveIn{
+	if err := u.Do(Input{
 		OutputFilename: "dist/output",
-		Entries: []usecases.ArchiveEntry{
+		Entries: []Entry{
 			{
 				Filename:      "entry1",
 				InputFilename: "input1",

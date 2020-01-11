@@ -1,4 +1,4 @@
-package mock_adaptors
+package testing
 
 import (
 	"bytes"

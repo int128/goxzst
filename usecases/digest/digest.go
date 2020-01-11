@@ -6,22 +6,35 @@ import (
 	"path/filepath"
 
 	"github.com/google/wire"
-	"github.com/int128/goxzst/adaptors"
-	"github.com/int128/goxzst/usecases"
+	"github.com/int128/goxzst/adaptors/fs"
+	"github.com/int128/goxzst/adaptors/logger"
+	"github.com/int128/goxzst/models/digest"
 	"github.com/pkg/errors"
 )
 
 var Set = wire.NewSet(
 	wire.Struct(new(Digest), "*"),
-	wire.Bind(new(usecases.Digest), new(*Digest)),
+	wire.Bind(new(Interface), new(*Digest)),
 )
 
-type Digest struct {
-	FileSystem adaptors.FileSystem
-	Logger     adaptors.Logger
+//go:generate mockgen -destination mock_digest/mock_digest.go github.com/int128/goxzst/usecases/digest Interface
+
+type Interface interface {
+	Do(in Input) error
 }
 
-func (u *Digest) Do(in usecases.DigestIn) error {
+type Input struct {
+	InputFilename  string
+	OutputFilename string
+	Algorithm      *digest.Algorithm
+}
+
+type Digest struct {
+	FileSystem fs.Interface
+	Logger     logger.Interface
+}
+
+func (u *Digest) Do(in Input) error {
 	if err := u.FileSystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
 		return errors.Wrapf(err, "error while creating the output directory")
 	}

@@ -5,14 +5,23 @@ import (
 	"os"
 
 	"github.com/google/wire"
-	"github.com/int128/goxzst/adaptors"
 	"github.com/pkg/errors"
 )
 
 var Set = wire.NewSet(
 	wire.Struct(new(FileSystem), "*"),
-	wire.Bind(new(adaptors.FileSystem), new(*FileSystem)),
+	wire.Bind(new(Interface), new(*FileSystem)),
 )
+
+//go:generate mockgen -destination mock_fs/mock_fs.go github.com/int128/goxzst/adaptors/fs Interface
+
+type Interface interface {
+	Open(name string) (io.ReadCloser, error)
+	Create(name string) (io.WriteCloser, error)
+	Remove(name string) error
+	Stat(name string) (os.FileInfo, error)
+	MkdirAll(path string) error
+}
 
 type FileSystem struct{}
 

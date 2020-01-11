@@ -1,4 +1,4 @@
-package templates
+package rendertemplate
 
 import (
 	"bytes"
@@ -8,8 +8,10 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/int128/goxzst/adaptors/mock_adaptors"
-	"github.com/int128/goxzst/usecases"
+	"github.com/int128/goxzst/adaptors/env/mock_env"
+	"github.com/int128/goxzst/adaptors/fs/mock_fs"
+	testingFs "github.com/int128/goxzst/adaptors/fs/testing"
+	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
 	"github.com/pkg/errors"
 )
 
@@ -18,14 +20,14 @@ func TestRenderTemplate_Do(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		env := mock_adaptors.NewMockEnv(ctrl)
+		env := mock_env.NewMockInterface(ctrl)
 		env.EXPECT().
 			LookupEnv("VERSION").
 			Return("v1.0.0", true).
 			AnyTimes()
 
-		var b mock_adaptors.WriteBuffer
-		filesystem := mock_adaptors.NewMockFileSystem(ctrl)
+		var b testingFs.WriteBuffer
+		filesystem := mock_fs.NewMockInterface(ctrl)
 		filesystem.EXPECT().
 			MkdirAll("dist")
 		filesystem.EXPECT().
@@ -38,9 +40,9 @@ func TestRenderTemplate_Do(t *testing.T) {
 		u := RenderTemplate{
 			Env:        env,
 			FileSystem: filesystem,
-			Logger:     mock_adaptors.NewLogger(t),
+			Logger:     testingLogger.New(t),
 		}
-		if err := u.Do(usecases.RenderTemplateIn{
+		if err := u.Do(Input{
 			InputFilename:  "testdata/homebrew.rb",
 			OutputFilename: "dist/output",
 			Variables: map[string]string{
@@ -63,14 +65,14 @@ func TestRenderTemplate_Do(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		env := mock_adaptors.NewMockEnv(ctrl)
+		env := mock_env.NewMockInterface(ctrl)
 		env.EXPECT().
 			LookupEnv("VERSION").
 			Return("v1.0.0", true).
 			AnyTimes()
 
-		var b mock_adaptors.WriteBuffer
-		filesystem := mock_adaptors.NewMockFileSystem(ctrl)
+		var b testingFs.WriteBuffer
+		filesystem := mock_fs.NewMockInterface(ctrl)
 		filesystem.EXPECT().
 			MkdirAll("dist")
 		filesystem.EXPECT().
@@ -94,9 +96,9 @@ func TestRenderTemplate_Do(t *testing.T) {
 		u := RenderTemplate{
 			Env:        env,
 			FileSystem: filesystem,
-			Logger:     mock_adaptors.NewLogger(t),
+			Logger:     testingLogger.New(t),
 		}
-		if err := u.Do(usecases.RenderTemplateIn{
+		if err := u.Do(Input{
 			InputFilename:  "testdata/krew.yaml",
 			OutputFilename: "dist/output",
 			Variables: map[string]string{
@@ -121,14 +123,14 @@ func TestRenderTemplate_Do(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		env := mock_adaptors.NewMockEnv(ctrl)
+		env := mock_env.NewMockInterface(ctrl)
 		env.EXPECT().
 			LookupEnv("VERSION").
 			Return("", false).
 			AnyTimes()
 
-		var b mock_adaptors.WriteBuffer
-		filesystem := mock_adaptors.NewMockFileSystem(ctrl)
+		var b testingFs.WriteBuffer
+		filesystem := mock_fs.NewMockInterface(ctrl)
 		filesystem.EXPECT().
 			MkdirAll("dist")
 		filesystem.EXPECT().
@@ -138,9 +140,9 @@ func TestRenderTemplate_Do(t *testing.T) {
 		u := RenderTemplate{
 			Env:        env,
 			FileSystem: filesystem,
-			Logger:     mock_adaptors.NewLogger(t),
+			Logger:     testingLogger.New(t),
 		}
-		err := u.Do(usecases.RenderTemplateIn{
+		err := u.Do(Input{
 			InputFilename:  "testdata/homebrew.rb",
 			OutputFilename: "dist/output",
 			Variables: map[string]string{

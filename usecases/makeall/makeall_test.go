@@ -4,11 +4,18 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/int128/goxzst/adaptors/mock_adaptors"
+	"github.com/int128/goxzst/adaptors/fs/mock_fs"
+	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/int128/goxzst/usecases"
-	"github.com/int128/goxzst/usecases/mock_usecases"
+	"github.com/int128/goxzst/usecases/archive"
+	"github.com/int128/goxzst/usecases/archive/mock_archive"
+	buildUseCase "github.com/int128/goxzst/usecases/crossbuild"
+	"github.com/int128/goxzst/usecases/crossbuild/mock_crossbuild"
+	digestUseCase "github.com/int128/goxzst/usecases/digest"
+	"github.com/int128/goxzst/usecases/digest/mock_digest"
+	"github.com/int128/goxzst/usecases/rendertemplate"
+	"github.com/int128/goxzst/usecases/rendertemplate/mock_rendertemplate"
 )
 
 func TestMake_Do(t *testing.T) {
@@ -16,41 +23,41 @@ func TestMake_Do(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		mockCrossBuild := mock_usecases.NewMockCrossBuild(ctrl)
+		mockCrossBuild := mock_crossbuild.NewMockInterface(ctrl)
 		mockCrossBuild.EXPECT().
-			Do(usecases.CrossBuildIn{
+			Do(buildUseCase.Input{
 				OutputFilename: "output_linux_amd64",
 				Platform:       build.Platform{GOOS: "linux", GOARCH: "amd64"},
 			})
-		mockArchive := mock_usecases.NewMockArchive(ctrl)
+		mockArchive := mock_archive.NewMockInterface(ctrl)
 		mockArchive.EXPECT().
-			Do(usecases.ArchiveIn{
+			Do(archive.Input{
 				OutputFilename: "output_linux_amd64.zip",
-				Entries: []usecases.ArchiveEntry{
+				Entries: []archive.Entry{
 					{Filename: "output", InputFilename: "output_linux_amd64"},
 				},
 			})
-		mockDigest := mock_usecases.NewMockDigest(ctrl)
+		mockDigest := mock_digest.NewMockInterface(ctrl)
 		mockDigest.EXPECT().
-			Do(usecases.DigestIn{
+			Do(digestUseCase.Input{
 				OutputFilename: "output_linux_amd64.zip.sha256",
 				InputFilename:  "output_linux_amd64.zip",
 				Algorithm:      digest.SHA256,
 			})
 
-		mockFileSystem := mock_adaptors.NewMockFileSystem(ctrl)
+		mockFileSystem := mock_fs.NewMockInterface(ctrl)
 		mockFileSystem.EXPECT().
 			Remove("output_linux_amd64")
 
-		u := Make{
+		u := MakeAll{
 			CrossBuild:     mockCrossBuild,
 			Archive:        mockArchive,
 			Digest:         mockDigest,
-			RenderTemplate: mock_usecases.NewMockRenderTemplate(ctrl),
+			RenderTemplate: mock_rendertemplate.NewMockInterface(ctrl),
 			FileSystem:     mockFileSystem,
-			Logger:         mock_adaptors.NewLogger(t),
+			Logger:         testingLogger.New(t),
 		}
-		if err := u.Do(usecases.MakeIn{
+		if err := u.Do(Input{
 			OutputName:      "output",
 			Platforms:       []build.Platform{{GOOS: "linux", GOARCH: "amd64"}},
 			DigestAlgorithm: digest.SHA256,
@@ -63,58 +70,58 @@ func TestMake_Do(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		mockFileSystem := mock_adaptors.NewMockFileSystem(ctrl)
+		mockFileSystem := mock_fs.NewMockInterface(ctrl)
 		mockFileSystem.EXPECT().
 			Remove("dir/output_linux_amd64")
 		mockFileSystem.EXPECT().
 			Remove("dir/output_windows_amd64.exe")
 
-		mockCrossBuild := mock_usecases.NewMockCrossBuild(ctrl)
+		mockCrossBuild := mock_crossbuild.NewMockInterface(ctrl)
 		mockCrossBuild.EXPECT().
-			Do(usecases.CrossBuildIn{
+			Do(buildUseCase.Input{
 				OutputFilename: "dir/output_linux_amd64",
 				Platform:       build.Platform{GOOS: "linux", GOARCH: "amd64"},
 				GoBuildArgs:    []string{"-ldflags", "-X foo=bar"},
 			})
 		mockCrossBuild.EXPECT().
-			Do(usecases.CrossBuildIn{
+			Do(buildUseCase.Input{
 				OutputFilename: "dir/output_windows_amd64.exe",
 				Platform:       build.Platform{GOOS: "windows", GOARCH: "amd64"},
 				GoBuildArgs:    []string{"-ldflags", "-X foo=bar"},
 			})
-		mockArchive := mock_usecases.NewMockArchive(ctrl)
+		mockArchive := mock_archive.NewMockInterface(ctrl)
 		mockArchive.EXPECT().
-			Do(usecases.ArchiveIn{
+			Do(archive.Input{
 				OutputFilename: "dir/output_linux_amd64.zip",
-				Entries: []usecases.ArchiveEntry{
+				Entries: []archive.Entry{
 					{Filename: "output", InputFilename: "dir/output_linux_amd64"},
 					{Filename: "LICENSE", InputFilename: "LICENSE"},
 				},
 			})
 		mockArchive.EXPECT().
-			Do(usecases.ArchiveIn{
+			Do(archive.Input{
 				OutputFilename: "dir/output_windows_amd64.zip",
-				Entries: []usecases.ArchiveEntry{
+				Entries: []archive.Entry{
 					{Filename: "output.exe", InputFilename: "dir/output_windows_amd64.exe"},
 					{Filename: "LICENSE", InputFilename: "LICENSE"},
 				},
 			})
-		mockDigest := mock_usecases.NewMockDigest(ctrl)
+		mockDigest := mock_digest.NewMockInterface(ctrl)
 		mockDigest.EXPECT().
-			Do(usecases.DigestIn{
+			Do(digestUseCase.Input{
 				OutputFilename: "dir/output_linux_amd64.zip.sha256",
 				InputFilename:  "dir/output_linux_amd64.zip",
 				Algorithm:      digest.SHA256,
 			})
 		mockDigest.EXPECT().
-			Do(usecases.DigestIn{
+			Do(digestUseCase.Input{
 				OutputFilename: "dir/output_windows_amd64.zip.sha256",
 				InputFilename:  "dir/output_windows_amd64.zip",
 				Algorithm:      digest.SHA256,
 			})
-		mockRenderTemplate := mock_usecases.NewMockRenderTemplate(ctrl)
+		mockRenderTemplate := mock_rendertemplate.NewMockInterface(ctrl)
 		mockRenderTemplate.EXPECT().
-			Do(usecases.RenderTemplateIn{
+			Do(rendertemplate.Input{
 				InputFilename:  "template1",
 				OutputFilename: "dir/template1",
 				Variables: map[string]string{
@@ -127,15 +134,15 @@ func TestMake_Do(t *testing.T) {
 				},
 			})
 
-		u := Make{
+		u := MakeAll{
 			CrossBuild:     mockCrossBuild,
 			Archive:        mockArchive,
 			Digest:         mockDigest,
 			RenderTemplate: mockRenderTemplate,
 			FileSystem:     mockFileSystem,
-			Logger:         mock_adaptors.NewLogger(t),
+			Logger:         testingLogger.New(t),
 		}
-		if err := u.Do(usecases.MakeIn{
+		if err := u.Do(Input{
 			OutputDir:  "dir",
 			OutputName: "output",
 			Platforms: []build.Platform{

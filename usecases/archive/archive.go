@@ -6,22 +6,38 @@ import (
 	"path/filepath"
 
 	"github.com/google/wire"
-	"github.com/int128/goxzst/adaptors"
-	"github.com/int128/goxzst/usecases"
+	"github.com/int128/goxzst/adaptors/fs"
+	"github.com/int128/goxzst/adaptors/logger"
 	"github.com/pkg/errors"
 )
 
 var Set = wire.NewSet(
 	wire.Struct(new(Archive), "*"),
-	wire.Bind(new(usecases.Archive), new(*Archive)),
+	wire.Bind(new(Interface), new(*Archive)),
 )
 
-type Archive struct {
-	FileSystem adaptors.FileSystem
-	Logger     adaptors.Logger
+//go:generate mockgen -destination mock_archive/mock_archive.go github.com/int128/goxzst/usecases/archive Interface
+
+type Interface interface {
+	Do(in Input) error
 }
 
-func (u *Archive) Do(in usecases.ArchiveIn) error {
+type Input struct {
+	OutputFilename string
+	Entries        []Entry
+}
+
+type Entry struct {
+	Filename      string // filename in the archive
+	InputFilename string
+}
+
+type Archive struct {
+	FileSystem fs.Interface
+	Logger     logger.Interface
+}
+
+func (u *Archive) Do(in Input) error {
 	if err := u.FileSystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
 		return errors.Wrapf(err, "error while creating the output directory")
 	}
@@ -45,7 +61,7 @@ func (u *Archive) Do(in usecases.ArchiveIn) error {
 	return nil
 }
 
-func (u *Archive) addEntry(zipWriter *zip.Writer, e usecases.ArchiveEntry) error {
+func (u *Archive) addEntry(zipWriter *zip.Writer, e Entry) error {
 	stat, err := u.FileSystem.Stat(e.InputFilename)
 	if err != nil {
 		return errors.Wrapf(err, "error while getting mode of the file %s", e.InputFilename)

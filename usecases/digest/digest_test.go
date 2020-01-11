@@ -6,17 +6,18 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/int128/goxzst/adaptors/mock_adaptors"
+	"github.com/int128/goxzst/adaptors/fs/mock_fs"
+	testingFs "github.com/int128/goxzst/adaptors/fs/testing"
+	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/int128/goxzst/usecases"
 )
 
 func TestDigest_Do(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	var b mock_adaptors.WriteBuffer
-	filesystem := mock_adaptors.NewMockFileSystem(ctrl)
+	var b testingFs.WriteBuffer
+	filesystem := mock_fs.NewMockInterface(ctrl)
 	filesystem.EXPECT().
 		MkdirAll("dist")
 	filesystem.EXPECT().
@@ -28,9 +29,9 @@ func TestDigest_Do(t *testing.T) {
 
 	u := Digest{
 		FileSystem: filesystem,
-		Logger:     mock_adaptors.NewLogger(t),
+		Logger:     testingLogger.New(t),
 	}
-	if err := u.Do(usecases.DigestIn{
+	if err := u.Do(Input{
 		InputFilename:  "input1",
 		OutputFilename: "dist/output",
 		Algorithm:      digest.SHA256,

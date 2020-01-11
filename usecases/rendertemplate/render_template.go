@@ -1,4 +1,4 @@
-package templates
+package rendertemplate
 
 import (
 	"fmt"
@@ -7,24 +7,37 @@ import (
 	"text/template"
 
 	"github.com/google/wire"
-	"github.com/int128/goxzst/adaptors"
+	"github.com/int128/goxzst/adaptors/env"
+	"github.com/int128/goxzst/adaptors/fs"
+	"github.com/int128/goxzst/adaptors/logger"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/int128/goxzst/usecases"
 	"github.com/pkg/errors"
 )
 
 var Set = wire.NewSet(
 	wire.Struct(new(RenderTemplate), "*"),
-	wire.Bind(new(usecases.RenderTemplate), new(*RenderTemplate)),
+	wire.Bind(new(Interface), new(*RenderTemplate)),
 )
 
-type RenderTemplate struct {
-	Env        adaptors.Env
-	FileSystem adaptors.FileSystem
-	Logger     adaptors.Logger
+//go:generate mockgen -destination mock_rendertemplate/mock_rendertemplate.go github.com/int128/goxzst/usecases/rendertemplate Interface
+
+type Interface interface {
+	Do(in Input) error
 }
 
-func (u *RenderTemplate) Do(in usecases.RenderTemplateIn) error {
+type Input struct {
+	InputFilename  string
+	OutputFilename string
+	Variables      map[string]string
+}
+
+type RenderTemplate struct {
+	Env        env.Interface
+	FileSystem fs.Interface
+	Logger     logger.Interface
+}
+
+func (u *RenderTemplate) Do(in Input) error {
 	if err := u.FileSystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
 		return errors.Wrapf(err, "error while creating the output directory")
 	}

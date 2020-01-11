@@ -6,25 +6,24 @@
 package di
 
 import (
-	"github.com/int128/goxzst/adaptors"
 	"github.com/int128/goxzst/adaptors/cmd"
 	"github.com/int128/goxzst/adaptors/env"
 	"github.com/int128/goxzst/adaptors/fs"
 	"github.com/int128/goxzst/adaptors/logger"
 	"github.com/int128/goxzst/usecases/archive"
-	"github.com/int128/goxzst/usecases/build"
+	"github.com/int128/goxzst/usecases/crossbuild"
 	"github.com/int128/goxzst/usecases/digest"
 	"github.com/int128/goxzst/usecases/makeall"
-	"github.com/int128/goxzst/usecases/templates"
+	"github.com/int128/goxzst/usecases/rendertemplate"
 )
 
 // Injectors from di.go:
 
-func NewCmd() adaptors.Cmd {
+func NewCmd() cmd.Interface {
 	envEnv := &env.Env{}
 	fileSystem := &fs.FileSystem{}
 	loggerLogger := &logger.Logger{}
-	crossBuild := &build.CrossBuild{
+	crossBuild := &crossbuild.CrossBuild{
 		Env:        envEnv,
 		FileSystem: fileSystem,
 		Logger:     loggerLogger,
@@ -37,12 +36,12 @@ func NewCmd() adaptors.Cmd {
 		FileSystem: fileSystem,
 		Logger:     loggerLogger,
 	}
-	renderTemplate := &templates.RenderTemplate{
+	renderTemplate := &rendertemplate.RenderTemplate{
 		Env:        envEnv,
 		FileSystem: fileSystem,
 		Logger:     loggerLogger,
 	}
-	makeallMake := &makeall.Make{
+	makeAll := &makeall.MakeAll{
 		CrossBuild:     crossBuild,
 		Archive:        archiveArchive,
 		Digest:         digestDigest,
@@ -51,9 +50,9 @@ func NewCmd() adaptors.Cmd {
 		Logger:         loggerLogger,
 	}
 	cmdCmd := &cmd.Cmd{
-		Make:   makeallMake,
-		Env:    envEnv,
-		Logger: loggerLogger,
+		MakeAllUseCase: makeAll,
+		Env:            envEnv,
+		Logger:         loggerLogger,
 	}
 	return cmdCmd
 }

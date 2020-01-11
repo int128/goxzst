@@ -51,7 +51,7 @@ Zip file size: 2040916 bytes, number of entries: 1
 1 file, 4100026 bytes uncompressed, 2040792 bytes compressed:  50.2%
 ```
 
-To make a Homebrew Formula, create [homebrew.rb](usecases/templates/testdata/homebrew.rb) and run:
+To make a Homebrew Formula, create [homebrew.rb](usecases/rendertemplate/testdata/homebrew.rb) and run:
 
 ```sh
 goxzst -o hello -t homebrew.rb
@@ -160,7 +160,7 @@ For example, you can render SHA-256 digest of the archive file as follows:
 {{ sha256 .linux_amd64_archive }}
 ```
 
-See also the examples: [homebrew.rb](usecases/templates/testdata/homebrew.rb) and [krew.yaml](usecases/templates/testdata/krew.yaml).
+See also the examples: [homebrew.rb](usecases/rendertemplate/testdata/homebrew.rb) and [krew.yaml](usecases/rendertemplate/testdata/krew.yaml).
 
 
 ## Related works

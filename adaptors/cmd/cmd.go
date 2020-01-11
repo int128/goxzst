@@ -6,10 +6,11 @@ import (
 	"strings"
 
 	"github.com/google/wire"
-	"github.com/int128/goxzst/adaptors"
+	"github.com/int128/goxzst/adaptors/env"
+	"github.com/int128/goxzst/adaptors/logger"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/int128/goxzst/usecases"
+	"github.com/int128/goxzst/usecases/makeall"
 	"github.com/pkg/errors"
 )
 
@@ -37,13 +38,17 @@ Options:
 
 var Set = wire.NewSet(
 	wire.Struct(new(Cmd), "*"),
-	wire.Bind(new(adaptors.Cmd), new(*Cmd)),
+	wire.Bind(new(Interface), new(*Cmd)),
 )
 
+type Interface interface {
+	Run(args []string, version string) int
+}
+
 type Cmd struct {
-	Make   usecases.Make
-	Env    adaptors.Env
-	Logger adaptors.Logger
+	MakeAllUseCase makeall.Interface
+	Env            env.Interface
+	Logger         logger.Interface
 }
 
 func (cmd *Cmd) Run(args []string, version string) int {
@@ -77,7 +82,7 @@ func (cmd *Cmd) Run(args []string, version string) int {
 		return 1
 	}
 
-	in := usecases.MakeIn{
+	in := makeall.Input{
 		OutputDir:             o.outputDir,
 		OutputName:            o.outputName,
 		Platforms:             platforms,
@@ -86,7 +91,7 @@ func (cmd *Cmd) Run(args []string, version string) int {
 		DigestAlgorithm:       digestAlgorithm,
 		TemplateFilenames:     o.templateFilenameList(),
 	}
-	if err := cmd.Make.Do(in); err != nil {
+	if err := cmd.MakeAllUseCase.Do(in); err != nil {
 		cmd.Logger.Logf("Error: %s", err)
 		return 1
 	}

@@ -5,14 +5,26 @@ import (
 	"os/exec"
 
 	"github.com/google/wire"
-	"github.com/int128/goxzst/adaptors"
 	"github.com/pkg/errors"
 )
 
 var Set = wire.NewSet(
 	wire.Struct(new(Env), "*"),
-	wire.Bind(new(adaptors.Env), new(*Env)),
+	wire.Bind(new(Interface), new(*Env)),
 )
+
+//go:generate mockgen -destination mock_env/mock_env.go github.com/int128/goxzst/adaptors/env Interface
+
+type Interface interface {
+	LookupEnv(key string) (string, bool)
+	Exec(in Exec) error
+}
+
+type Exec struct {
+	Name     string
+	Args     []string
+	ExtraEnv []string
+}
 
 type Env struct{}
 
@@ -31,9 +43,9 @@ func (*Env) LookupEnv(key string) (string, bool) {
 // Exec runs and waits for a process.
 // It inherits env vars of the current process.
 // It sets Stdout and Stderr to the os defaults.
-func (*Env) Exec(in adaptors.ExecIn) error {
-	cmd := exec.Command(in.Name, in.Args...)
-	cmd.Env = append(os.Environ(), in.ExtraEnv...)
+func (*Env) Exec(e Exec) error {
+	cmd := exec.Command(e.Name, e.Args...)
+	cmd.Env = append(os.Environ(), e.ExtraEnv...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
