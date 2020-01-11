@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
@@ -33,6 +34,11 @@ Usage:
 
 Options:
 `
+
+var Set = wire.NewSet(
+	wire.Struct(new(Cmd), "*"),
+	wire.Bind(new(adaptors.Cmd), new(*Cmd)),
+)
 
 type Cmd struct {
 	Make   usecases.Make

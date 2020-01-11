@@ -5,9 +5,15 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors"
 	"github.com/int128/goxzst/usecases"
 	"github.com/pkg/errors"
+)
+
+var Set = wire.NewSet(
+	wire.Struct(new(CrossBuild), "*"),
+	wire.Bind(new(usecases.CrossBuild), new(*CrossBuild)),
 )
 
 type CrossBuild struct {

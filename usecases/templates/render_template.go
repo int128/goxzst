@@ -6,10 +6,16 @@ import (
 	"path/filepath"
 	"text/template"
 
+	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors"
 	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases"
 	"github.com/pkg/errors"
+)
+
+var Set = wire.NewSet(
+	wire.Struct(new(RenderTemplate), "*"),
+	wire.Bind(new(usecases.RenderTemplate), new(*RenderTemplate)),
 )
 
 type RenderTemplate struct {

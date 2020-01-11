@@ -4,10 +4,16 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/usecases"
 	"github.com/pkg/errors"
+)
+
+var Set = wire.NewSet(
+	wire.Struct(new(Make), "*"),
+	wire.Bind(new(usecases.Make), new(*Make)),
 )
 
 type Make struct {

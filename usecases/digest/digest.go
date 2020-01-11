@@ -5,9 +5,15 @@ import (
 	"io"
 	"path/filepath"
 
+	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors"
 	"github.com/int128/goxzst/usecases"
 	"github.com/pkg/errors"
+)
+
+var Set = wire.NewSet(
+	wire.Struct(new(Digest), "*"),
+	wire.Bind(new(usecases.Digest), new(*Digest)),
 )
 
 type Digest struct {

@@ -4,8 +4,14 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors"
 	"github.com/pkg/errors"
+)
+
+var Set = wire.NewSet(
+	wire.Struct(new(Env), "*"),
+	wire.Bind(new(adaptors.Env), new(*Env)),
 )
 
 type Env struct{}
