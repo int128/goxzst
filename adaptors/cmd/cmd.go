@@ -11,7 +11,6 @@ import (
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases/makeall"
-	"github.com/pkg/errors"
 )
 
 const usage = `%[1]s %[2]s
@@ -120,7 +119,7 @@ func (o *cmdOptions) platformList() ([]build.Platform, error) {
 	for _, s := range strings.Split(o.osarch, " ") {
 		p := strings.SplitN(s, "_", 2)
 		if len(p) != 2 {
-			return nil, errors.Errorf("osarch must be GOOS_GOARCH but was %s", s)
+			return nil, fmt.Errorf("osarch must be GOOS_GOARCH but was %s", s)
 		}
 		platforms = append(platforms, build.Platform{
 			GOOS:   build.GOOS(p[0]),

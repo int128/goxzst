@@ -11,7 +11,6 @@ import (
 	"github.com/int128/goxzst/adaptors/fs"
 	"github.com/int128/goxzst/adaptors/logger"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/pkg/errors"
 )
 
 var Set = wire.NewSet(
@@ -39,7 +38,7 @@ type RenderTemplate struct {
 
 func (u *RenderTemplate) Do(in Input) error {
 	if err := u.FileSystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
-		return errors.Wrapf(err, "error while creating the output directory")
+		return fmt.Errorf("error while creating the output directory: %w", err)
 	}
 
 	u.Logger.Logf("Creating %s from the template %s", in.OutputFilename, in.InputFilename)
@@ -55,17 +54,17 @@ func (u *RenderTemplate) Do(in Input) error {
 		}).
 		ParseFiles(in.InputFilename)
 	if err != nil {
-		return errors.Wrapf(err, "error while loading templates")
+		return fmt.Errorf("error while loading templates: %w", err)
 	}
 
 	output, err := u.FileSystem.Create(in.OutputFilename)
 	if err != nil {
-		return errors.Wrapf(err, "error while creating the file %s", in.OutputFilename)
+		return fmt.Errorf("error while creating the file %s: %w", in.OutputFilename, err)
 	}
 	defer output.Close()
 
 	if err := tpl.Execute(output, in.Variables); err != nil {
-		return errors.Wrapf(err, "error while rendering the template %s", in.InputFilename)
+		return fmt.Errorf("error while rendering the template %s: %w", in.InputFilename, err)
 	}
 	return nil
 }
@@ -73,7 +72,7 @@ func (u *RenderTemplate) Do(in Input) error {
 func (u *RenderTemplate) env(key string) (string, error) {
 	value, ok := u.Env.LookupEnv(key)
 	if !ok {
-		return "", errors.Errorf("no such environment variable %s", key)
+		return "", fmt.Errorf("no such environment variable %s", key)
 	}
 	return value, nil
 }
@@ -81,12 +80,12 @@ func (u *RenderTemplate) env(key string) (string, error) {
 func (u *RenderTemplate) digest(filename string, algorithm *digest.Algorithm) (string, error) {
 	r, err := u.FileSystem.Open(filename)
 	if err != nil {
-		return "", errors.Errorf("error while opening %s", filename)
+		return "", fmt.Errorf("error while opening %s", filename)
 	}
 	defer r.Close()
 	w := algorithm.NewHash()
 	if _, err := io.Copy(w, r); err != nil {
-		return "", errors.Wrapf(err, "error while computing digest of the file %s", filename)
+		return "", fmt.Errorf("error while computing digest of the file %s: %w", filename, err)
 	}
 	h := fmt.Sprintf("%x", w.Sum(nil))
 	return h, nil

@@ -10,7 +10,6 @@ import (
 	"github.com/int128/goxzst/adaptors/fs"
 	"github.com/int128/goxzst/adaptors/logger"
 	"github.com/int128/goxzst/models/build"
-	"github.com/pkg/errors"
 )
 
 var Set = wire.NewSet(
@@ -38,7 +37,7 @@ type CrossBuild struct {
 
 func (u *CrossBuild) Do(in Input) error {
 	if err := u.FileSystem.MkdirAll(filepath.Dir(in.OutputFilename)); err != nil {
-		return errors.Wrapf(err, "error while creating the output directory")
+		return fmt.Errorf("error while creating the output directory: %w", err)
 	}
 
 	args := append([]string{"build", "-o", in.OutputFilename}, in.GoBuildArgs...)
@@ -53,7 +52,7 @@ func (u *CrossBuild) Do(in Input) error {
 		Args:     args,
 		ExtraEnv: envVars,
 	}); err != nil {
-		return errors.Wrapf(err, "go build error")
+		return fmt.Errorf("go build error: %w", err)
 	}
 	return nil
 }

@@ -1,6 +1,7 @@
 package makeall
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 
@@ -13,7 +14,6 @@ import (
 	build2 "github.com/int128/goxzst/usecases/crossbuild"
 	digest2 "github.com/int128/goxzst/usecases/digest"
 	"github.com/int128/goxzst/usecases/rendertemplate"
-	"github.com/pkg/errors"
 )
 
 var Set = wire.NewSet(
@@ -55,7 +55,7 @@ func (u *MakeAll) Do(in Input) error {
 	for _, platform := range in.Platforms {
 		out, err := u.build(in, platform)
 		if err != nil {
-			return errors.Wrapf(err, "error while build for the platform %s", platform)
+			return fmt.Errorf("error while build for the platform %s: %w", platform, err)
 		}
 		buildOuts = append(buildOuts, out)
 	}
@@ -75,7 +75,7 @@ func (u *MakeAll) Do(in Input) error {
 			OutputFilename: filepath.Join(in.OutputDir, filepath.Base(t)),
 			Variables:      templateVariables,
 		}); err != nil {
-			return errors.Wrapf(err, "error while rendering templates")
+			return fmt.Errorf("error while rendering templates: %w", err)
 		}
 	}
 
@@ -83,7 +83,7 @@ func (u *MakeAll) Do(in Input) error {
 		name := buildOut.executableFile.Name()
 		u.Logger.Logf("Removing %s", name)
 		if err := u.FileSystem.Remove(name); err != nil {
-			return errors.Wrapf(err, "error while removing %s", name)
+			return fmt.Errorf("error while removing %s: %w", name, err)
 		}
 	}
 	return nil
@@ -108,7 +108,7 @@ func (u *MakeAll) build(in Input, platform build.Platform) (*buildOut, error) {
 		GoBuildArgs:    in.GoBuildArgs,
 		Platform:       platform,
 	}); err != nil {
-		return nil, errors.Wrapf(err, "error while cross build")
+		return nil, fmt.Errorf("error while cross build: %w", err)
 	}
 
 	archiveFile := build.ArchiveFile{
@@ -133,7 +133,7 @@ func (u *MakeAll) build(in Input, platform build.Platform) (*buildOut, error) {
 		OutputFilename: archiveFile.Name(),
 		Entries:        archiveEntries,
 	}); err != nil {
-		return nil, errors.Wrapf(err, "error while archive")
+		return nil, fmt.Errorf("error while archive: %w", err)
 	}
 
 	digestFile := build.DigestFile{
@@ -145,7 +145,7 @@ func (u *MakeAll) build(in Input, platform build.Platform) (*buildOut, error) {
 		OutputFilename: digestFile.Name(),
 		Algorithm:      in.DigestAlgorithm,
 	}); err != nil {
-		return nil, errors.Wrapf(err, "error while digest")
+		return nil, fmt.Errorf("error while digest: %w", err)
 	}
 
 	return &buildOut{

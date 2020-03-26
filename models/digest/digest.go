@@ -3,9 +3,8 @@ package digest
 import (
 	"crypto/sha256"
 	"crypto/sha512"
+	"fmt"
 	"hash"
-
-	"github.com/pkg/errors"
 )
 
 var (
@@ -36,7 +35,7 @@ func NewAlgorithm(name string) (*Algorithm, error) {
 			return alg, nil
 		}
 	}
-	return nil, errors.Errorf("not supported %s", name)
+	return nil, fmt.Errorf("not supported %s", name)
 }
 
 type Algorithm struct {

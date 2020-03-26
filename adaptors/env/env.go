@@ -1,11 +1,11 @@
 package env
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 
 	"github.com/google/wire"
-	"github.com/pkg/errors"
 )
 
 var Set = wire.NewSet(
@@ -31,7 +31,7 @@ type Env struct{}
 func (*Env) Getwd() (string, error) {
 	dir, err := os.Getwd()
 	if err != nil {
-		return "", errors.WithStack(err)
+		return "", fmt.Errorf("%w", err)
 	}
 	return dir, nil
 }
@@ -49,7 +49,7 @@ func (*Env) Exec(e Exec) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		return errors.Wrapf(err, "error while exec")
+		return fmt.Errorf("error while exec: %w", err)
 	}
 	return nil
 }

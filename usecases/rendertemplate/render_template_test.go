@@ -2,6 +2,7 @@ package rendertemplate
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"strings"
@@ -12,7 +13,6 @@ import (
 	"github.com/int128/goxzst/adaptors/fs/mock_fs"
 	testingFs "github.com/int128/goxzst/adaptors/fs/testing"
 	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
-	"github.com/pkg/errors"
 )
 
 func TestRenderTemplate_Do(t *testing.T) {
@@ -89,7 +89,7 @@ func TestRenderTemplate_Do(t *testing.T) {
 				case "dist/output_windows_amd64.zip":
 					return ioutil.NopCloser(strings.NewReader("text3")), nil
 				}
-				return nil, errors.Errorf("no such file: %s", name)
+				return nil, fmt.Errorf("no such file: %s", name)
 			}).
 			AnyTimes()
 
