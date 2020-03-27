@@ -1,7 +1,7 @@
 module github.com/int128/goxzst
 
 require (
-	github.com/golang/mock v1.3.1
+	github.com/golang/mock v1.4.3
 	github.com/google/wire v0.4.0
 )
 
