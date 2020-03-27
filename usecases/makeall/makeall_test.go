@@ -10,7 +10,7 @@ import (
 	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases/archive"
 	"github.com/int128/goxzst/usecases/archive/mock_archive"
-	buildUseCase "github.com/int128/goxzst/usecases/crossbuild"
+	"github.com/int128/goxzst/usecases/crossbuild"
 	"github.com/int128/goxzst/usecases/crossbuild/mock_crossbuild"
 	digestUseCase "github.com/int128/goxzst/usecases/digest"
 	"github.com/int128/goxzst/usecases/digest/mock_digest"
@@ -25,7 +25,7 @@ func TestMake_Do(t *testing.T) {
 
 		mockCrossBuild := mock_crossbuild.NewMockInterface(ctrl)
 		mockCrossBuild.EXPECT().
-			Do(buildUseCase.Input{
+			Do(crossbuild.Input{
 				OutputFilename: "output_linux_amd64",
 				Platform:       build.Platform{GOOS: "linux", GOARCH: "amd64"},
 			})
@@ -78,13 +78,13 @@ func TestMake_Do(t *testing.T) {
 
 		mockCrossBuild := mock_crossbuild.NewMockInterface(ctrl)
 		mockCrossBuild.EXPECT().
-			Do(buildUseCase.Input{
+			Do(crossbuild.Input{
 				OutputFilename: "dir/output_linux_amd64",
 				Platform:       build.Platform{GOOS: "linux", GOARCH: "amd64"},
 				GoBuildArgs:    []string{"-ldflags", "-X foo=bar"},
 			})
 		mockCrossBuild.EXPECT().
-			Do(buildUseCase.Input{
+			Do(crossbuild.Input{
 				OutputFilename: "dir/output_windows_amd64.exe",
 				Platform:       build.Platform{GOOS: "windows", GOARCH: "amd64"},
 				GoBuildArgs:    []string{"-ldflags", "-X foo=bar"},

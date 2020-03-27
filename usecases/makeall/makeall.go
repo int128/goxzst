@@ -11,8 +11,8 @@ import (
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases/archive"
-	build2 "github.com/int128/goxzst/usecases/crossbuild"
-	digest2 "github.com/int128/goxzst/usecases/digest"
+	"github.com/int128/goxzst/usecases/crossbuild"
+	digestUseCase "github.com/int128/goxzst/usecases/digest"
 	"github.com/int128/goxzst/usecases/rendertemplate"
 )
 
@@ -38,9 +38,9 @@ type Input struct {
 }
 
 type MakeAll struct {
-	CrossBuild     build2.Interface
+	CrossBuild     crossbuild.Interface
 	Archive        archive.Interface
-	Digest         digest2.Interface
+	Digest         digestUseCase.Interface
 	RenderTemplate rendertemplate.Interface
 	FileSystem     fs.Interface
 	Logger         logger.Interface
@@ -103,7 +103,7 @@ func (u *MakeAll) build(in Input, platform build.Platform) (*buildOut, error) {
 		Base:     basename,
 		Platform: platform,
 	}
-	if err := u.CrossBuild.Do(build2.Input{
+	if err := u.CrossBuild.Do(crossbuild.Input{
 		OutputFilename: builtExecutableFile.Name(),
 		GoBuildArgs:    in.GoBuildArgs,
 		Platform:       platform,
@@ -140,7 +140,7 @@ func (u *MakeAll) build(in Input, platform build.Platform) (*buildOut, error) {
 		Base:   archiveFile.Name(),
 		Suffix: in.DigestAlgorithm.Suffix,
 	}
-	if err := u.Digest.Do(digest2.Input{
+	if err := u.Digest.Do(digestUseCase.Input{
 		InputFilename:  archiveFile.Name(),
 		OutputFilename: digestFile.Name(),
 		Algorithm:      in.DigestAlgorithm,
