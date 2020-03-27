@@ -15,6 +15,10 @@ type Interface interface {
 	Logf(format string, v ...interface{})
 }
 
+func init() {
+	log.SetFlags(log.Lmicroseconds)
+}
+
 type Logger struct{}
 
 func (*Logger) Logf(format string, v ...interface{}) {
