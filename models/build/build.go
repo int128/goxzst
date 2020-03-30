@@ -52,3 +52,10 @@ type DigestFile struct {
 func (f *DigestFile) Name() string {
 	return f.Base + f.Suffix
 }
+
+type Artifact struct {
+	Platform       Platform
+	ExecutableFile ExecutableFile
+	ArchiveFile    ArchiveFile
+	DigestFile     DigestFile
+}

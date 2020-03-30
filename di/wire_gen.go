@@ -14,6 +14,7 @@ import (
 	"github.com/int128/goxzst/usecases/crossbuild"
 	"github.com/int128/goxzst/usecases/digest"
 	"github.com/int128/goxzst/usecases/makeall"
+	"github.com/int128/goxzst/usecases/makesingle"
 	"github.com/int128/goxzst/usecases/rendertemplate"
 )
 
@@ -36,15 +37,18 @@ func NewCmd() cmd.Interface {
 		FileSystem: fileSystem,
 		Logger:     loggerLogger,
 	}
+	makeSingle := &makesingle.MakeSingle{
+		CrossBuild: crossBuild,
+		Archive:    archiveArchive,
+		Digest:     digestDigest,
+	}
 	renderTemplate := &rendertemplate.RenderTemplate{
 		Env:        envEnv,
 		FileSystem: fileSystem,
 		Logger:     loggerLogger,
 	}
 	makeAll := &makeall.MakeAll{
-		CrossBuild:     crossBuild,
-		Archive:        archiveArchive,
-		Digest:         digestDigest,
+		MakeSingle:     makeSingle,
 		RenderTemplate: renderTemplate,
 		FileSystem:     fileSystem,
 		Logger:         loggerLogger,

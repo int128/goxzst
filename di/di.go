@@ -12,6 +12,7 @@ import (
 	"github.com/int128/goxzst/usecases/crossbuild"
 	"github.com/int128/goxzst/usecases/digest"
 	"github.com/int128/goxzst/usecases/makeall"
+	"github.com/int128/goxzst/usecases/makesingle"
 	"github.com/int128/goxzst/usecases/rendertemplate"
 )
 
@@ -25,6 +26,7 @@ func NewCmd() cmd.Interface {
 
 		// usecases
 		makeall.Set,
+		makesingle.Set,
 		archive.Set,
 		crossbuild.Set,
 		digest.Set,
