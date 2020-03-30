@@ -1,4 +1,4 @@
-# goxzst [![CircleCI](https://circleci.com/gh/int128/goxzst.svg?style=shield)](https://circleci.com/gh/int128/goxzst)
+# goxzst [![CircleCI](https://circleci.com/gh/int128/goxzst.svg?style=shield)](https://circleci.com/gh/int128/goxzst) [![Go Report Card](https://goreportcard.com/badge/github.com/int128/goxzst)](https://goreportcard.com/report/github.com/int128/goxzst)
 
 This is a command to make cross builds, ZIP archives, SHA digests.
 As well as it can render templates, for example, Homebrew formula and Kubernetes Krew yaml.
@@ -20,7 +20,7 @@ Install [the latest release](https://github.com/int128/goxzst/releases).
 go get github.com/int128/goxzst
 
 # GitHub Releases
-curl -sfL -o /tmp/goxzst.zip https://github.com/int128/goxzst/releases/download/v0.3.0/goxzst_linux_amd64.zip
+curl -sfL -o /tmp/goxzst.zip https://github.com/int128/goxzst/releases/download/v1.0.1/goxzst_linux_amd64.zip
 unzip /tmp/goxzst.zip -d ~/bin
 ```
 
@@ -167,6 +167,8 @@ See also the examples: [homebrew.rb](usecases/rendertemplate/testdata/homebrew.r
 
 This is inspired by [Songmu/goxz](https://github.com/Songmu/goxz).
 Thank you for the great work.
+
+You can upload ZIP files to GitHub Releases using [int128/ghcp](https://github.com/int128/ghcp).
 
 
 ## Contributions
