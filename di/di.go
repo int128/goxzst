@@ -11,9 +11,9 @@ import (
 	"github.com/int128/goxzst/usecases/archive"
 	"github.com/int128/goxzst/usecases/crossbuild"
 	"github.com/int128/goxzst/usecases/digest"
-	"github.com/int128/goxzst/usecases/makeall"
-	"github.com/int128/goxzst/usecases/makesingle"
 	"github.com/int128/goxzst/usecases/rendertemplate"
+	"github.com/int128/goxzst/usecases/xzs"
+	"github.com/int128/goxzst/usecases/xzst"
 )
 
 func NewCmd() cmd.Interface {
@@ -25,8 +25,8 @@ func NewCmd() cmd.Interface {
 		logger.Set,
 
 		// usecases
-		makeall.Set,
-		makesingle.Set,
+		xzst.Set,
+		xzs.Set,
 		archive.Set,
 		crossbuild.Set,
 		digest.Set,

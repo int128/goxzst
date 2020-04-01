@@ -1,5 +1,5 @@
-// Package makesingle provides the use-case to make an executable, archive and digest for a platform.
-package makesingle
+// Package xzs provides the use-case to make an executable, archive and digest for a platform.
+package xzs
 
 import (
 	"fmt"
@@ -14,11 +14,11 @@ import (
 )
 
 var Set = wire.NewSet(
-	wire.Struct(new(MakeSingle), "*"),
-	wire.Bind(new(Interface), new(*MakeSingle)),
+	wire.Struct(new(XZS), "*"),
+	wire.Bind(new(Interface), new(*XZS)),
 )
 
-//go:generate mockgen -destination mock_makesingle/mock_makesingle.go github.com/int128/goxzst/usecases/makesingle Interface
+//go:generate mockgen -destination mock_xzs/mock_xzs.go github.com/int128/goxzst/usecases/xzs Interface
 
 type Interface interface {
 	Do(in Input) (*build.Artifact, error)
@@ -33,13 +33,13 @@ type Input struct {
 	DigestAlgorithm       *digest.Algorithm
 }
 
-type MakeSingle struct {
+type XZS struct {
 	CrossBuild crossbuild.Interface
 	Archive    archive.Interface
 	Digest     digestUseCase.Interface
 }
 
-func (u *MakeSingle) Do(in Input) (*build.Artifact, error) {
+func (u *XZS) Do(in Input) (*build.Artifact, error) {
 	basename := filepath.Join(in.OutputDir, fmt.Sprintf("%s_%s_%s", in.OutputName, in.Platform.GOOS, in.Platform.GOARCH))
 
 	builtExecutableFile := build.ExecutableFile{

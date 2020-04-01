@@ -8,8 +8,8 @@ import (
 	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/int128/goxzst/usecases/makeall"
-	"github.com/int128/goxzst/usecases/makeall/mock_makeall"
+	"github.com/int128/goxzst/usecases/xzst"
+	"github.com/int128/goxzst/usecases/xzst/mock_xzst"
 )
 
 func TestCmd_Run(t *testing.T) {
@@ -24,9 +24,9 @@ func TestCmd_Run(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		cmd := Cmd{
-			MakeAllUseCase: mock_makeall.NewMockInterface(ctrl),
-			Logger:         testingLogger.New(t),
-			Env:            mock_env.NewMockInterface(ctrl),
+			XZST:   mock_xzst.NewMockInterface(ctrl),
+			Logger: testingLogger.New(t),
+			Env:    mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst"}, version)
 		if exitCode != 1 {
@@ -37,9 +37,9 @@ func TestCmd_Run(t *testing.T) {
 	t.Run("MinimumArgs", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		makeUseCase := mock_makeall.NewMockInterface(ctrl)
-		makeUseCase.EXPECT().
-			Do(makeall.Input{
+		xzstUseCase := mock_xzst.NewMockInterface(ctrl)
+		xzstUseCase.EXPECT().
+			Do(xzst.Input{
 				OutputDir:       "dist",
 				OutputName:      "hello",
 				Platforms:       defaultPlatforms,
@@ -48,9 +48,9 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			MakeAllUseCase: makeUseCase,
-			Logger:         testingLogger.New(t),
-			Env:            mock_env.NewMockInterface(ctrl),
+			XZST:   xzstUseCase,
+			Logger: testingLogger.New(t),
+			Env:    mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello"}, version)
 		if exitCode != 0 {
@@ -61,9 +61,9 @@ func TestCmd_Run(t *testing.T) {
 	t.Run("WithGoBuildArgs", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		makeUseCase := mock_makeall.NewMockInterface(ctrl)
-		makeUseCase.EXPECT().
-			Do(makeall.Input{
+		xzstUseCase := mock_xzst.NewMockInterface(ctrl)
+		xzstUseCase.EXPECT().
+			Do(xzst.Input{
 				OutputDir:       "dist",
 				OutputName:      "hello",
 				Platforms:       defaultPlatforms,
@@ -72,9 +72,9 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			MakeAllUseCase: makeUseCase,
-			Logger:         testingLogger.New(t),
-			Env:            mock_env.NewMockInterface(ctrl),
+			XZST:   xzstUseCase,
+			Logger: testingLogger.New(t),
+			Env:    mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "--", "-ldflags", "-X foo=bar"}, version)
 		if exitCode != 0 {
@@ -85,9 +85,9 @@ func TestCmd_Run(t *testing.T) {
 	t.Run("WithPlatforms", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		makeUseCase := mock_makeall.NewMockInterface(ctrl)
-		makeUseCase.EXPECT().
-			Do(makeall.Input{
+		xzstUseCase := mock_xzst.NewMockInterface(ctrl)
+		xzstUseCase.EXPECT().
+			Do(xzst.Input{
 				OutputDir:  "dist",
 				OutputName: "hello",
 				Platforms: []build.Platform{
@@ -98,9 +98,9 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			MakeAllUseCase: makeUseCase,
-			Logger:         testingLogger.New(t),
-			Env:            mock_env.NewMockInterface(ctrl),
+			XZST:   xzstUseCase,
+			Logger: testingLogger.New(t),
+			Env:    mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-osarch", "linux_arm"}, version)
 		if exitCode != 0 {
@@ -111,9 +111,9 @@ func TestCmd_Run(t *testing.T) {
 	t.Run("WithExtraFilesToZip", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		makeUseCase := mock_makeall.NewMockInterface(ctrl)
-		makeUseCase.EXPECT().
-			Do(makeall.Input{
+		xzstUseCase := mock_xzst.NewMockInterface(ctrl)
+		xzstUseCase.EXPECT().
+			Do(xzst.Input{
 				OutputDir:             "dist",
 				OutputName:            "hello",
 				Platforms:             defaultPlatforms,
@@ -123,9 +123,9 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			MakeAllUseCase: makeUseCase,
-			Logger:         testingLogger.New(t),
-			Env:            mock_env.NewMockInterface(ctrl),
+			XZST:   xzstUseCase,
+			Logger: testingLogger.New(t),
+			Env:    mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-i", "README.md LICENSE"}, version)
 		if exitCode != 0 {
@@ -136,9 +136,9 @@ func TestCmd_Run(t *testing.T) {
 	t.Run("WithDigestAlgorithm", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		makeUseCase := mock_makeall.NewMockInterface(ctrl)
-		makeUseCase.EXPECT().
-			Do(makeall.Input{
+		xzstUseCase := mock_xzst.NewMockInterface(ctrl)
+		xzstUseCase.EXPECT().
+			Do(xzst.Input{
 				OutputDir:       "dist",
 				OutputName:      "hello",
 				Platforms:       defaultPlatforms,
@@ -147,9 +147,9 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			MakeAllUseCase: makeUseCase,
-			Logger:         testingLogger.New(t),
-			Env:            mock_env.NewMockInterface(ctrl),
+			XZST:   xzstUseCase,
+			Logger: testingLogger.New(t),
+			Env:    mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-a", "sha512"}, version)
 		if exitCode != 0 {
@@ -160,9 +160,9 @@ func TestCmd_Run(t *testing.T) {
 	t.Run("WithTemplates", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		makeUseCase := mock_makeall.NewMockInterface(ctrl)
-		makeUseCase.EXPECT().
-			Do(makeall.Input{
+		xzstUseCase := mock_xzst.NewMockInterface(ctrl)
+		xzstUseCase.EXPECT().
+			Do(xzst.Input{
 				OutputDir:         "dist",
 				OutputName:        "hello",
 				Platforms:         defaultPlatforms,
@@ -172,9 +172,9 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			MakeAllUseCase: makeUseCase,
-			Logger:         testingLogger.New(t),
-			Env:            mock_env.NewMockInterface(ctrl),
+			XZST:   xzstUseCase,
+			Logger: testingLogger.New(t),
+			Env:    mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-t", "template1 template2"}, version)
 		if exitCode != 0 {

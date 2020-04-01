@@ -1,4 +1,4 @@
-package makeall
+package xzst
 
 import (
 	"testing"
@@ -8,10 +8,10 @@ import (
 	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/int128/goxzst/usecases/makesingle"
-	"github.com/int128/goxzst/usecases/makesingle/mock_makesingle"
 	"github.com/int128/goxzst/usecases/rendertemplate"
 	"github.com/int128/goxzst/usecases/rendertemplate/mock_rendertemplate"
+	"github.com/int128/goxzst/usecases/xzs"
+	"github.com/int128/goxzst/usecases/xzs/mock_xzs"
 )
 
 func TestMake_Do(t *testing.T) {
@@ -20,9 +20,9 @@ func TestMake_Do(t *testing.T) {
 		defer ctrl.Finish()
 
 		platform := build.Platform{GOOS: "linux", GOARCH: "amd64"}
-		mockMakeSingle := mock_makesingle.NewMockInterface(ctrl)
-		mockMakeSingle.EXPECT().
-			Do(makesingle.Input{
+		xzsUseCase := mock_xzs.NewMockInterface(ctrl)
+		xzsUseCase.EXPECT().
+			Do(xzs.Input{
 				OutputName:      "output",
 				Platform:        platform,
 				DigestAlgorithm: digest.SHA256,
@@ -37,8 +37,8 @@ func TestMake_Do(t *testing.T) {
 		mockFileSystem.EXPECT().
 			Remove("output_linux_amd64")
 
-		u := MakeAll{
-			MakeSingle:     mockMakeSingle,
+		u := XZST{
+			XZS:            xzsUseCase,
 			RenderTemplate: mock_rendertemplate.NewMockInterface(ctrl),
 			FileSystem:     mockFileSystem,
 			Logger:         testingLogger.New(t),
@@ -58,9 +58,9 @@ func TestMake_Do(t *testing.T) {
 
 		linuxPlatform := build.Platform{GOOS: "linux", GOARCH: "amd64"}
 		windowsPlatform := build.Platform{GOOS: "windows", GOARCH: "amd64"}
-		mockMakeSingle := mock_makesingle.NewMockInterface(ctrl)
-		mockMakeSingle.EXPECT().
-			Do(makesingle.Input{
+		xzsUseCase := mock_xzs.NewMockInterface(ctrl)
+		xzsUseCase.EXPECT().
+			Do(xzs.Input{
 				OutputDir:             "dir",
 				OutputName:            "output",
 				Platform:              linuxPlatform,
@@ -74,8 +74,8 @@ func TestMake_Do(t *testing.T) {
 				ArchiveFile:    build.ArchiveFile{Base: "dir/output_linux_amd64", Suffix: ".zip"},
 				DigestFile:     build.DigestFile{Base: "dir/output_linux_amd64.zip", Suffix: ".sha256"},
 			}, nil)
-		mockMakeSingle.EXPECT().
-			Do(makesingle.Input{
+		xzsUseCase.EXPECT().
+			Do(xzs.Input{
 				OutputDir:             "dir",
 				OutputName:            "output",
 				Platform:              windowsPlatform,
@@ -109,8 +109,8 @@ func TestMake_Do(t *testing.T) {
 				},
 			})
 
-		u := MakeAll{
-			MakeSingle:     mockMakeSingle,
+		u := XZST{
+			XZS:            xzsUseCase,
 			RenderTemplate: mockRenderTemplate,
 			FileSystem:     mockFileSystem,
 			Logger:         testingLogger.New(t),

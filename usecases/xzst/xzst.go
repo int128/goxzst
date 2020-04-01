@@ -1,5 +1,5 @@
-// Package makeall provides the use-case to make the archives, digests and templates (XZST).
-package makeall
+// Package xzst provides the use-case to make the archives, digests and templates (XZST).
+package xzst
 
 import (
 	"errors"
@@ -11,16 +11,16 @@ import (
 	"github.com/int128/goxzst/adaptors/logger"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/int128/goxzst/usecases/makesingle"
 	"github.com/int128/goxzst/usecases/rendertemplate"
+	"github.com/int128/goxzst/usecases/xzs"
 )
 
 var Set = wire.NewSet(
-	wire.Struct(new(MakeAll), "*"),
-	wire.Bind(new(Interface), new(*MakeAll)),
+	wire.Struct(new(XZST), "*"),
+	wire.Bind(new(Interface), new(*XZST)),
 )
 
-//go:generate mockgen -destination mock_makeall/mock_makeall.go github.com/int128/goxzst/usecases/makeall Interface
+//go:generate mockgen -destination mock_xzst/mock_xzst.go github.com/int128/goxzst/usecases/xzst Interface
 
 type Interface interface {
 	Do(in Input) error
@@ -36,21 +36,21 @@ type Input struct {
 	TemplateFilenames     []string
 }
 
-type MakeAll struct {
-	MakeSingle     makesingle.Interface
+type XZST struct {
+	XZS            xzs.Interface
 	RenderTemplate rendertemplate.Interface
 	FileSystem     fs.Interface
 	Logger         logger.Interface
 }
 
-func (u *MakeAll) Do(in Input) error {
+func (u *XZST) Do(in Input) error {
 	if in.DigestAlgorithm == nil {
 		return errors.New("DigestAlgorithm must be non-nil")
 	}
 
 	var artifacts []*build.Artifact
 	for _, platform := range in.Platforms {
-		artifact, err := u.MakeSingle.Do(makesingle.Input{
+		artifact, err := u.XZS.Do(xzs.Input{
 			OutputDir:             in.OutputDir,
 			OutputName:            in.OutputName,
 			Platform:              platform,

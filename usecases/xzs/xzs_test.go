@@ -1,4 +1,4 @@
-package makesingle
+package xzs
 
 import (
 	"testing"
@@ -43,7 +43,7 @@ func TestMakeSingle_Do(t *testing.T) {
 				Algorithm:      digest.SHA256,
 			})
 
-		u := MakeSingle{
+		u := XZS{
 			CrossBuild: mockCrossBuild,
 			Archive:    mockArchive,
 			Digest:     mockDigest,
@@ -96,7 +96,7 @@ func TestMakeSingle_Do(t *testing.T) {
 				Algorithm:      digest.SHA256,
 			})
 
-		u := MakeSingle{
+		u := XZS{
 			CrossBuild: mockCrossBuild,
 			Archive:    mockArchive,
 			Digest:     mockDigest,

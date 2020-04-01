@@ -11,7 +11,7 @@ import (
 	"github.com/int128/goxzst/adaptors/logger"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
-	"github.com/int128/goxzst/usecases/makeall"
+	"github.com/int128/goxzst/usecases/xzst"
 )
 
 const usage = `%[1]s %[2]s
@@ -46,9 +46,9 @@ type Interface interface {
 }
 
 type Cmd struct {
-	MakeAllUseCase makeall.Interface
-	Env            env.Interface
-	Logger         logger.Interface
+	XZST   xzst.Interface
+	Env    env.Interface
+	Logger logger.Interface
 }
 
 // Run parses the command line arguments and executes the corresponding use-case.
@@ -83,7 +83,7 @@ func (cmd *Cmd) Run(args []string, version string) int {
 		return 1
 	}
 
-	in := makeall.Input{
+	in := xzst.Input{
 		OutputDir:             o.outputDir,
 		OutputName:            o.outputName,
 		Platforms:             platforms,
@@ -92,7 +92,7 @@ func (cmd *Cmd) Run(args []string, version string) int {
 		DigestAlgorithm:       digestAlgorithm,
 		TemplateFilenames:     o.templateFilenameList(),
 	}
-	if err := cmd.MakeAllUseCase.Do(in); err != nil {
+	if err := cmd.XZST.Do(in); err != nil {
 		cmd.Logger.Logf("Error: %s", err)
 		return 1
 	}
