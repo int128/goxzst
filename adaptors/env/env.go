@@ -1,3 +1,4 @@
+// Package env provides the environment variables access and command execution.
 package env
 
 import (

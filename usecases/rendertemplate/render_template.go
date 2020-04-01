@@ -1,3 +1,4 @@
+// Package rendertemplate provides the use-case to render a template.
 package rendertemplate
 
 import (

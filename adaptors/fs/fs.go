@@ -1,3 +1,4 @@
+// Package fs provides the file system access.
 package fs
 
 import (

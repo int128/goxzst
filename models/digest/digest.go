@@ -1,3 +1,4 @@
+// Package digest provides the message digest features.
 package digest
 
 import (
@@ -29,6 +30,8 @@ var AvailableAlgorithms = []*Algorithm{
 	SHA512,
 }
 
+// NewAlgorithm returns the corresponding Algorithm.
+// If not found, it returns an error.
 func NewAlgorithm(name string) (*Algorithm, error) {
 	for _, alg := range AvailableAlgorithms {
 		if name == alg.Name {
@@ -38,6 +41,7 @@ func NewAlgorithm(name string) (*Algorithm, error) {
 	return nil, fmt.Errorf("not supported %s", name)
 }
 
+// Algorithm represents a digest algorithm.
 type Algorithm struct {
 	Name    string
 	Suffix  string

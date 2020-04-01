@@ -1,3 +1,4 @@
+// Package cmd provides the command line interface (CLI).
 package cmd
 
 import (
@@ -50,6 +51,7 @@ type Cmd struct {
 	Logger         logger.Interface
 }
 
+// Run parses the command line arguments and executes the corresponding use-case.
 func (cmd *Cmd) Run(args []string, version string) int {
 	var o cmdOptions
 	f := flag.NewFlagSet(args[0], flag.ExitOnError)

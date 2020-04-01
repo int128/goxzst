@@ -1,3 +1,4 @@
+// Package makesingle provides the use-case to make an executable, archive and digest for a platform.
 package makesingle
 
 import (

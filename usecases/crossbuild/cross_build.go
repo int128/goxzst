@@ -1,3 +1,4 @@
+// Package crossbuild provides the use-case to build executables for platforms.
 package crossbuild
 
 import (

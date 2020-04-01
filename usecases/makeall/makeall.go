@@ -1,3 +1,4 @@
+// Package makeall provides the use-case to make the archives, digests and templates (XZST).
 package makeall
 
 import (

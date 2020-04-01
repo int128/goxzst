@@ -1,3 +1,4 @@
+// Package archive provides the use-case to archive an executable file and extra files.
 package archive
 
 import (

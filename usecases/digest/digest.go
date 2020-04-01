@@ -1,3 +1,4 @@
+// Package digest provides the use-case to generate a digest.
 package digest
 
 import (
