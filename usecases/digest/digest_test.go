@@ -8,11 +8,12 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/int128/goxzst/adaptors/fs/mock_fs"
 	testingFs "github.com/int128/goxzst/adaptors/fs/testing"
-	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
+	"github.com/int128/goxzst/adaptors/log"
 	"github.com/int128/goxzst/models/digest"
 )
 
 func TestDigest_Do(t *testing.T) {
+	log.Printf = t.Logf
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -29,7 +30,6 @@ func TestDigest_Do(t *testing.T) {
 
 	u := Digest{
 		FileSystem: filesystem,
-		Logger:     testingLogger.New(t),
 	}
 	if err := u.Do(Input{
 		InputFilename:  "input1",

@@ -10,7 +10,7 @@ import (
 	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors/env"
 	"github.com/int128/goxzst/adaptors/fs"
-	"github.com/int128/goxzst/adaptors/logger"
+	"github.com/int128/goxzst/adaptors/log"
 	"github.com/int128/goxzst/models/digest"
 )
 
@@ -34,7 +34,6 @@ type Input struct {
 type RenderTemplate struct {
 	Env        env.Interface
 	FileSystem fs.Interface
-	Logger     logger.Interface
 }
 
 func (u *RenderTemplate) Do(in Input) error {
@@ -42,7 +41,7 @@ func (u *RenderTemplate) Do(in Input) error {
 		return fmt.Errorf("error while creating the output directory: %w", err)
 	}
 
-	u.Logger.Logf("Creating %s from the template %s", in.OutputFilename, in.InputFilename)
+	log.Printf("Creating %s from the template %s", in.OutputFilename, in.InputFilename)
 	tpl, err := template.New(filepath.Base(in.InputFilename)).
 		Funcs(template.FuncMap{
 			"env": u.env,

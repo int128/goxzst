@@ -7,11 +7,13 @@ import (
 	"github.com/int128/goxzst/adaptors/env"
 	"github.com/int128/goxzst/adaptors/env/mock_env"
 	"github.com/int128/goxzst/adaptors/fs/mock_fs"
-	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
+	"github.com/int128/goxzst/adaptors/log"
 	"github.com/int128/goxzst/models/build"
 )
 
 func TestCrossBuild_Do(t *testing.T) {
+	log.Printf = t.Logf
+
 	t.Run("BasicOptions", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -29,7 +31,6 @@ func TestCrossBuild_Do(t *testing.T) {
 		u := CrossBuild{
 			Env:        mockEnv,
 			FileSystem: mockFs,
-			Logger:     testingLogger.New(t),
 		}
 		if err := u.Do(Input{
 			OutputFilename: "output",
@@ -57,7 +58,6 @@ func TestCrossBuild_Do(t *testing.T) {
 		u := CrossBuild{
 			Env:        mockEnv,
 			FileSystem: mockFs,
-			Logger:     testingLogger.New(t),
 		}
 		if err := u.Do(Input{
 			OutputFilename: "dist/output",

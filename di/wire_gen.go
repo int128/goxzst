@@ -9,7 +9,6 @@ import (
 	"github.com/int128/goxzst/adaptors/cmd"
 	"github.com/int128/goxzst/adaptors/env"
 	"github.com/int128/goxzst/adaptors/fs"
-	"github.com/int128/goxzst/adaptors/logger"
 	"github.com/int128/goxzst/usecases/archive"
 	"github.com/int128/goxzst/usecases/crossbuild"
 	"github.com/int128/goxzst/usecases/digest"
@@ -23,19 +22,15 @@ import (
 func NewCmd() cmd.Interface {
 	envEnv := &env.Env{}
 	fileSystem := &fs.FileSystem{}
-	loggerLogger := &logger.Logger{}
 	crossBuild := &crossbuild.CrossBuild{
 		Env:        envEnv,
 		FileSystem: fileSystem,
-		Logger:     loggerLogger,
 	}
 	archiveArchive := &archive.Archive{
 		FileSystem: fileSystem,
-		Logger:     loggerLogger,
 	}
 	digestDigest := &digest.Digest{
 		FileSystem: fileSystem,
-		Logger:     loggerLogger,
 	}
 	xzsXZS := &xzs.XZS{
 		CrossBuild: crossBuild,
@@ -45,18 +40,15 @@ func NewCmd() cmd.Interface {
 	renderTemplate := &rendertemplate.RenderTemplate{
 		Env:        envEnv,
 		FileSystem: fileSystem,
-		Logger:     loggerLogger,
 	}
 	xzstXZST := &xzst.XZST{
 		XZS:            xzsXZS,
 		RenderTemplate: renderTemplate,
 		FileSystem:     fileSystem,
-		Logger:         loggerLogger,
 	}
 	cmdCmd := &cmd.Cmd{
-		XZST:   xzstXZST,
-		Env:    envEnv,
-		Logger: loggerLogger,
+		XZST: xzstXZST,
+		Env:  envEnv,
 	}
 	return cmdCmd
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors/env"
 	"github.com/int128/goxzst/adaptors/fs"
-	"github.com/int128/goxzst/adaptors/logger"
+	"github.com/int128/goxzst/adaptors/log"
 	"github.com/int128/goxzst/models/build"
 )
 
@@ -33,7 +33,6 @@ type Input struct {
 type CrossBuild struct {
 	Env        env.Interface
 	FileSystem fs.Interface
-	Logger     logger.Interface
 }
 
 func (u *CrossBuild) Do(in Input) error {
@@ -47,7 +46,7 @@ func (u *CrossBuild) Do(in Input) error {
 		fmt.Sprintf("GOARCH=%s", in.Platform.GOARCH),
 	}
 
-	u.Logger.Logf("%s go %s", strings.Join(envVars, " "), strings.Join(args, " "))
+	log.Printf("%s go %s", strings.Join(envVars, " "), strings.Join(args, " "))
 	if err := u.Env.Exec(env.Exec{
 		Name:     "go",
 		Args:     args,

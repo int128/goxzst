@@ -10,18 +10,14 @@ import (
 
 var (
 	SHA256 = &Algorithm{
-		Name:   "sha256",
-		Suffix: ".sha256",
-		NewHash: func() hash.Hash {
-			return sha256.New()
-		},
+		Name:    "sha256",
+		Suffix:  ".sha256",
+		NewHash: sha256.New,
 	}
 	SHA512 = &Algorithm{
-		Name:   "sha512",
-		Suffix: ".sha512",
-		NewHash: func() hash.Hash {
-			return sha512.New()
-		},
+		Name:    "sha512",
+		Suffix:  ".sha512",
+		NewHash: sha512.New,
 	}
 )
 

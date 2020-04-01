@@ -12,10 +12,12 @@ import (
 	"github.com/int128/goxzst/adaptors/env/mock_env"
 	"github.com/int128/goxzst/adaptors/fs/mock_fs"
 	testingFs "github.com/int128/goxzst/adaptors/fs/testing"
-	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
+	"github.com/int128/goxzst/adaptors/log"
 )
 
 func TestRenderTemplate_Do(t *testing.T) {
+	log.Printf = t.Logf
+
 	t.Run("homebrew.rb", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -40,7 +42,6 @@ func TestRenderTemplate_Do(t *testing.T) {
 		u := RenderTemplate{
 			Env:        env,
 			FileSystem: filesystem,
-			Logger:     testingLogger.New(t),
 		}
 		if err := u.Do(Input{
 			InputFilename:  "testdata/homebrew.rb",
@@ -96,7 +97,6 @@ func TestRenderTemplate_Do(t *testing.T) {
 		u := RenderTemplate{
 			Env:        env,
 			FileSystem: filesystem,
-			Logger:     testingLogger.New(t),
 		}
 		if err := u.Do(Input{
 			InputFilename:  "testdata/krew.yaml",
@@ -140,7 +140,6 @@ func TestRenderTemplate_Do(t *testing.T) {
 		u := RenderTemplate{
 			Env:        env,
 			FileSystem: filesystem,
-			Logger:     testingLogger.New(t),
 		}
 		err := u.Do(Input{
 			InputFilename:  "testdata/homebrew.rb",

@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors/env"
-	"github.com/int128/goxzst/adaptors/logger"
+	"github.com/int128/goxzst/adaptors/log"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases/xzst"
@@ -48,7 +48,6 @@ type Interface interface {
 type Cmd struct {
 	XZST   xzst.Interface
 	Env    env.Interface
-	Logger logger.Interface
 }
 
 // Run parses the command line arguments and executes the corresponding use-case.
@@ -69,17 +68,17 @@ func (cmd *Cmd) Run(args []string, version string) int {
 		return 1
 	}
 	if o.outputName == "" {
-		cmd.Logger.Logf("You need to set output name by -o option")
+		log.Printf("You need to set output name by -o option")
 		return 1
 	}
 	platforms, err := o.platformList()
 	if err != nil {
-		cmd.Logger.Logf("Invalid arguments: %s", err)
+		log.Printf("Invalid arguments: %s", err)
 		return 1
 	}
 	digestAlgorithm, err := digest.NewAlgorithm(o.digestAlgorithm)
 	if err != nil {
-		cmd.Logger.Logf("Invalid digest algorithm: %s", err)
+		log.Printf("Invalid digest algorithm: %s", err)
 		return 1
 	}
 
@@ -93,7 +92,7 @@ func (cmd *Cmd) Run(args []string, version string) int {
 		TemplateFilenames:     o.templateFilenameList(),
 	}
 	if err := cmd.XZST.Do(in); err != nil {
-		cmd.Logger.Logf("Error: %s", err)
+		log.Printf("Error: %s", err)
 		return 1
 	}
 	return 0

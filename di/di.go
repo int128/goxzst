@@ -7,7 +7,6 @@ import (
 	"github.com/int128/goxzst/adaptors/cmd"
 	"github.com/int128/goxzst/adaptors/env"
 	"github.com/int128/goxzst/adaptors/fs"
-	"github.com/int128/goxzst/adaptors/logger"
 	"github.com/int128/goxzst/usecases/archive"
 	"github.com/int128/goxzst/usecases/crossbuild"
 	"github.com/int128/goxzst/usecases/digest"
@@ -22,7 +21,6 @@ func NewCmd() cmd.Interface {
 		cmd.Set,
 		env.Set,
 		fs.Set,
-		logger.Set,
 
 		// usecases
 		xzst.Set,

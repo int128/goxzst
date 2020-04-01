@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors/fs"
-	"github.com/int128/goxzst/adaptors/logger"
+	"github.com/int128/goxzst/adaptors/log"
 	"github.com/int128/goxzst/models/digest"
 )
 
@@ -31,7 +31,6 @@ type Input struct {
 
 type Digest struct {
 	FileSystem fs.Interface
-	Logger     logger.Interface
 }
 
 func (u *Digest) Do(in Input) error {
@@ -39,7 +38,7 @@ func (u *Digest) Do(in Input) error {
 		return fmt.Errorf("error while creating the output directory: %w", err)
 	}
 
-	u.Logger.Logf("Creating %s", in.OutputFilename)
+	log.Printf("Creating %s", in.OutputFilename)
 	input, err := u.FileSystem.Open(in.InputFilename)
 	if err != nil {
 		return fmt.Errorf("error while opening the file %s: %w", in.InputFilename, err)

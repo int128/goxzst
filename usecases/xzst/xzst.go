@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors/fs"
-	"github.com/int128/goxzst/adaptors/logger"
+	"github.com/int128/goxzst/adaptors/log"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases/rendertemplate"
@@ -40,7 +40,6 @@ type XZST struct {
 	XZS            xzs.Interface
 	RenderTemplate rendertemplate.Interface
 	FileSystem     fs.Interface
-	Logger         logger.Interface
 }
 
 func (u *XZST) Do(in Input) error {
@@ -85,7 +84,7 @@ func (u *XZST) Do(in Input) error {
 
 	for _, artifact := range artifacts {
 		name := artifact.ExecutableFile.Name()
-		u.Logger.Logf("Removing %s", name)
+		log.Printf("Removing %s", name)
 		if err := u.FileSystem.Remove(name); err != nil {
 			return fmt.Errorf("error while removing %s: %w", name, err)
 		}

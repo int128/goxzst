@@ -12,10 +12,11 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/int128/goxzst/adaptors/fs/mock_fs"
 	testingFs "github.com/int128/goxzst/adaptors/fs/testing"
-	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
+	"github.com/int128/goxzst/adaptors/log"
 )
 
 func TestArchive_Do(t *testing.T) {
+	log.Printf = t.Logf
 	fileInfo1 := testingFs.FileInfo{
 		ModeValue:    0644,
 		ModTimeValue: time.Date(2019, 4, 1, 2, 3, 4, 0, time.UTC),
@@ -50,7 +51,6 @@ func TestArchive_Do(t *testing.T) {
 
 	u := Archive{
 		FileSystem: filesystem,
-		Logger:     testingLogger.New(t),
 	}
 	if err := u.Do(Input{
 		OutputFilename: "dist/output",

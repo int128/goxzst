@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/wire"
 	"github.com/int128/goxzst/adaptors/fs"
-	"github.com/int128/goxzst/adaptors/logger"
+	"github.com/int128/goxzst/adaptors/log"
 )
 
 var Set = wire.NewSet(
@@ -35,7 +35,6 @@ type Entry struct {
 
 type Archive struct {
 	FileSystem fs.Interface
-	Logger     logger.Interface
 }
 
 func (u *Archive) Do(in Input) error {
@@ -43,7 +42,7 @@ func (u *Archive) Do(in Input) error {
 		return fmt.Errorf("error while creating the output directory: %w", err)
 	}
 
-	u.Logger.Logf("Creating %s", in.OutputFilename)
+	log.Printf("Creating %s", in.OutputFilename)
 	output, err := u.FileSystem.Create(in.OutputFilename)
 	if err != nil {
 		return fmt.Errorf("error while creating the file %s: %w", in.OutputFilename, err)

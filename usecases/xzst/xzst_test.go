@@ -5,7 +5,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/int128/goxzst/adaptors/fs/mock_fs"
-	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
+	"github.com/int128/goxzst/adaptors/log"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases/rendertemplate"
@@ -15,6 +15,8 @@ import (
 )
 
 func TestMake_Do(t *testing.T) {
+	log.Printf = t.Logf
+
 	t.Run("LessOptions", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -41,7 +43,6 @@ func TestMake_Do(t *testing.T) {
 			XZS:            xzsUseCase,
 			RenderTemplate: mock_rendertemplate.NewMockInterface(ctrl),
 			FileSystem:     mockFileSystem,
-			Logger:         testingLogger.New(t),
 		}
 		if err := u.Do(Input{
 			OutputName:      "output",
@@ -113,7 +114,6 @@ func TestMake_Do(t *testing.T) {
 			XZS:            xzsUseCase,
 			RenderTemplate: mockRenderTemplate,
 			FileSystem:     mockFileSystem,
-			Logger:         testingLogger.New(t),
 		}
 		if err := u.Do(Input{
 			OutputDir:  "dir",

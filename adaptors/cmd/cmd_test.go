@@ -5,7 +5,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/int128/goxzst/adaptors/env/mock_env"
-	testingLogger "github.com/int128/goxzst/adaptors/logger/testing"
+	"github.com/int128/goxzst/adaptors/log"
 	"github.com/int128/goxzst/models/build"
 	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases/xzst"
@@ -13,6 +13,7 @@ import (
 )
 
 func TestCmd_Run(t *testing.T) {
+	log.Printf = t.Logf
 	const version = "dummyVersionString"
 	defaultPlatforms := []build.Platform{
 		{GOOS: "linux", GOARCH: "amd64"},
@@ -24,9 +25,8 @@ func TestCmd_Run(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		cmd := Cmd{
-			XZST:   mock_xzst.NewMockInterface(ctrl),
-			Logger: testingLogger.New(t),
-			Env:    mock_env.NewMockInterface(ctrl),
+			XZST: mock_xzst.NewMockInterface(ctrl),
+			Env:  mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst"}, version)
 		if exitCode != 1 {
@@ -48,9 +48,8 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			XZST:   xzstUseCase,
-			Logger: testingLogger.New(t),
-			Env:    mock_env.NewMockInterface(ctrl),
+			XZST: xzstUseCase,
+			Env:  mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello"}, version)
 		if exitCode != 0 {
@@ -72,9 +71,8 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			XZST:   xzstUseCase,
-			Logger: testingLogger.New(t),
-			Env:    mock_env.NewMockInterface(ctrl),
+			XZST: xzstUseCase,
+			Env:  mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "--", "-ldflags", "-X foo=bar"}, version)
 		if exitCode != 0 {
@@ -98,9 +96,8 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			XZST:   xzstUseCase,
-			Logger: testingLogger.New(t),
-			Env:    mock_env.NewMockInterface(ctrl),
+			XZST: xzstUseCase,
+			Env:  mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-osarch", "linux_arm"}, version)
 		if exitCode != 0 {
@@ -123,9 +120,8 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			XZST:   xzstUseCase,
-			Logger: testingLogger.New(t),
-			Env:    mock_env.NewMockInterface(ctrl),
+			XZST: xzstUseCase,
+			Env:  mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-i", "README.md LICENSE"}, version)
 		if exitCode != 0 {
@@ -147,9 +143,8 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			XZST:   xzstUseCase,
-			Logger: testingLogger.New(t),
-			Env:    mock_env.NewMockInterface(ctrl),
+			XZST: xzstUseCase,
+			Env:  mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-a", "sha512"}, version)
 		if exitCode != 0 {
@@ -172,9 +167,8 @@ func TestCmd_Run(t *testing.T) {
 			})
 
 		cmd := Cmd{
-			XZST:   xzstUseCase,
-			Logger: testingLogger.New(t),
-			Env:    mock_env.NewMockInterface(ctrl),
+			XZST: xzstUseCase,
+			Env:  mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-t", "template1 template2"}, version)
 		if exitCode != 0 {
