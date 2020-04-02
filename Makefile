@@ -19,7 +19,7 @@ run: goxzst
 release: goxzst
 	-rm -r dist/
 	./goxzst -o goxzst -- -ldflags "-X main.version=$(CIRCLE_TAG)"
-	ghr -u "$(CIRCLE_PROJECT_USERNAME)" -r "$(CIRCLE_PROJECT_REPONAME)" "$(CIRCLE_TAG)" dist
+	ghcp release -u "$(CIRCLE_PROJECT_USERNAME)" -r "$(CIRCLE_PROJECT_REPONAME)" -t "$(CIRCLE_TAG)" dist/
 
 clean:
 	-rm -r dist/

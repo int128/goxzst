@@ -11,7 +11,7 @@ jobs:
       - run: make check
       - run: make run
       - run:
-          command: go get -v github.com/tcnksm/ghr
+          command: go get -v github.com/int128/ghcp
           working_directory: .circleci
       - run: |
           if [ "$CIRCLE_TAG" ]; then
