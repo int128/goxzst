@@ -20,7 +20,7 @@ Install [the latest release](https://github.com/int128/goxzst/releases).
 go get github.com/int128/goxzst
 
 # GitHub Releases
-curl -sfL -o /tmp/goxzst.zip https://github.com/int128/goxzst/releases/download/v1.0.1/goxzst_linux_amd64.zip
+curl -sfL -o /tmp/goxzst.zip https://github.com/int128/goxzst/releases/download/v1.1.0/goxzst_linux_amd64.zip
 unzip /tmp/goxzst.zip -d ~/bin
 ```
 
