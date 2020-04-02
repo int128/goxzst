@@ -2,16 +2,25 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.13.6
+      - image: cimg/go:1.13
     steps:
-      - run: go get github.com/tcnksm/ghr
       - checkout
+      - restore_cache:
+          keys:
+            - go-sum-{{ checksum "go.sum" }}
       - run: make check
       - run: make run
+      - run:
+          command: go get -v github.com/tcnksm/ghr
+          working_directory: .circleci
       - run: |
           if [ "$CIRCLE_TAG" ]; then
             make release
           fi
+      - save_cache:
+          key: go-sum-{{ checksum "go.sum" }}
+          paths:
+            - ~/go/pkg
 
 workflows:
   version: 2
