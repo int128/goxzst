@@ -4,6 +4,7 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"runtime"
 	"strings"
 
 	"github.com/google/wire"
@@ -46,8 +47,8 @@ type Interface interface {
 }
 
 type Cmd struct {
-	XZST   xzst.Interface
-	Env    env.Interface
+	XZST xzst.Interface
+	Env  env.Interface
 }
 
 // Run parses the command line arguments and executes the corresponding use-case.
@@ -64,6 +65,7 @@ func (cmd *Cmd) Run(args []string, version string) int {
 	f.StringVar(&o.archiveExtraFilenames, "i", "", "List of extra files to add to the zip, separated by space")
 	f.StringVar(&o.digestAlgorithm, "a", "sha256", fmt.Sprintf("Digest algorithm. One of (%s)", availableDigestAlgorithms()))
 	f.StringVar(&o.templateFilenames, "t", "", "List of template files separated by space")
+	f.IntVar(&o.parallelism, "parallelism", defaultParallelism, "Number of parallel build. Default to the current CPU cores")
 	if err := f.Parse(args[1:]); err != nil {
 		return 1
 	}
@@ -90,6 +92,7 @@ func (cmd *Cmd) Run(args []string, version string) int {
 		ArchiveExtraFilenames: o.archiveExtraFilenameList(),
 		DigestAlgorithm:       digestAlgorithm,
 		TemplateFilenames:     o.templateFilenameList(),
+		Parallelism:           o.parallelism,
 	}
 	if err := cmd.XZST.Do(in); err != nil {
 		log.Printf("Error: %s", err)
@@ -97,6 +100,8 @@ func (cmd *Cmd) Run(args []string, version string) int {
 	}
 	return 0
 }
+
+var defaultParallelism = runtime.NumCPU()
 
 func availableDigestAlgorithms() string {
 	var names []string
@@ -113,6 +118,7 @@ type cmdOptions struct {
 	archiveExtraFilenames string
 	digestAlgorithm       string
 	templateFilenames     string
+	parallelism           int
 }
 
 func (o *cmdOptions) platformList() ([]build.Platform, error) {

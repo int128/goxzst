@@ -13,6 +13,7 @@ import (
 	"github.com/int128/goxzst/models/digest"
 	"github.com/int128/goxzst/usecases/rendertemplate"
 	"github.com/int128/goxzst/usecases/xzs"
+	"golang.org/x/sync/errgroup"
 )
 
 var Set = wire.NewSet(
@@ -34,6 +35,7 @@ type Input struct {
 	ArchiveExtraFilenames []string
 	DigestAlgorithm       *digest.Algorithm
 	TemplateFilenames     []string
+	Parallelism           int
 }
 
 type XZST struct {
@@ -46,23 +48,14 @@ func (u *XZST) Do(in Input) error {
 	if in.DigestAlgorithm == nil {
 		return errors.New("DigestAlgorithm must be non-nil")
 	}
-
-	var artifacts []*build.Artifact
-	for _, platform := range in.Platforms {
-		artifact, err := u.XZS.Do(xzs.Input{
-			OutputDir:             in.OutputDir,
-			OutputName:            in.OutputName,
-			Platform:              platform,
-			GoBuildArgs:           in.GoBuildArgs,
-			ArchiveExtraFilenames: in.ArchiveExtraFilenames,
-			DigestAlgorithm:       in.DigestAlgorithm,
-		})
-		if err != nil {
-			return fmt.Errorf("error while build for the platform %s: %w", platform, err)
-		}
-		artifacts = append(artifacts, artifact)
+	if in.Parallelism < 1 {
+		return fmt.Errorf("parallelism must be 1 or greater but was %d", in.Parallelism)
 	}
 
+	artifacts, err := u.parallelXZS(in)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
 	templateVariables := make(map[string]string)
 	for _, artifact := range artifacts {
 		templateVariables[fmt.Sprintf("%s_%s_executable", artifact.Platform.GOOS, artifact.Platform.GOARCH)] =
@@ -81,7 +74,6 @@ func (u *XZST) Do(in Input) error {
 			return fmt.Errorf("error while rendering templates: %w", err)
 		}
 	}
-
 	for _, artifact := range artifacts {
 		name := artifact.ExecutableFile.Name()
 		log.Printf("Removing %s", name)
@@ -90,4 +82,48 @@ func (u *XZST) Do(in Input) error {
 		}
 	}
 	return nil
+}
+
+func (u *XZST) parallelXZS(in Input) ([]*build.Artifact, error) {
+	xzsQueue := make(chan xzs.Input, len(in.Platforms))
+	for _, platform := range in.Platforms {
+		xzsQueue <- xzs.Input{
+			OutputDir:             in.OutputDir,
+			OutputName:            in.OutputName,
+			Platform:              platform,
+			GoBuildArgs:           in.GoBuildArgs,
+			ArchiveExtraFilenames: in.ArchiveExtraFilenames,
+			DigestAlgorithm:       in.DigestAlgorithm,
+		}
+	}
+	close(xzsQueue)
+
+	artifactQueue := make(chan *build.Artifact, len(in.Platforms))
+	var eg errgroup.Group
+	for i := 0; i < in.Parallelism; i++ {
+		eg.Go(func() error {
+			for {
+				xzsInput, ok := <-xzsQueue
+				if !ok {
+					return nil
+				}
+				artifact, err := u.XZS.Do(xzsInput)
+				if err != nil {
+					return fmt.Errorf("platform %s: %w", xzsInput.Platform, err)
+				}
+				artifactQueue <- artifact
+			}
+		})
+	}
+	if err := eg.Wait(); err != nil {
+		close(artifactQueue)
+		return nil, fmt.Errorf("build error: %w", err)
+	}
+	close(artifactQueue)
+
+	var artifacts []*build.Artifact
+	for artifact := range artifactQueue {
+		artifacts = append(artifacts, artifact)
+	}
+	return artifacts, nil
 }

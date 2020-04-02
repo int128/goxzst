@@ -89,6 +89,8 @@ Options:
     	Output name (mandatory)
   -osarch string
     	List of GOOS_GOARCH separated by space (default "linux_amd64 darwin_amd64 windows_amd64")
+  -parallelism int
+    	Number of parallel build. Default to the current CPU cores
   -t string
     	List of template files separated by space
 ```

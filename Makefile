@@ -4,7 +4,7 @@ all: goxzst
 
 check:
 	go vet
-	go test -v ./...
+	go test -v -race ./...
 
 goxzst: $(wildcard **/*.go)
 	go build -o $@

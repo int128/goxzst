@@ -45,6 +45,7 @@ func TestCmd_Run(t *testing.T) {
 				Platforms:       defaultPlatforms,
 				GoBuildArgs:     []string{},
 				DigestAlgorithm: digest.SHA256,
+				Parallelism:     defaultParallelism,
 			})
 
 		cmd := Cmd{
@@ -68,6 +69,7 @@ func TestCmd_Run(t *testing.T) {
 				Platforms:       defaultPlatforms,
 				GoBuildArgs:     []string{"-ldflags", "-X foo=bar"},
 				DigestAlgorithm: digest.SHA256,
+				Parallelism:     defaultParallelism,
 			})
 
 		cmd := Cmd{
@@ -93,6 +95,7 @@ func TestCmd_Run(t *testing.T) {
 				},
 				GoBuildArgs:     []string{},
 				DigestAlgorithm: digest.SHA256,
+				Parallelism:     defaultParallelism,
 			})
 
 		cmd := Cmd{
@@ -117,6 +120,7 @@ func TestCmd_Run(t *testing.T) {
 				GoBuildArgs:           []string{},
 				ArchiveExtraFilenames: []string{"README.md", "LICENSE"},
 				DigestAlgorithm:       digest.SHA256,
+				Parallelism:           defaultParallelism,
 			})
 
 		cmd := Cmd{
@@ -140,6 +144,7 @@ func TestCmd_Run(t *testing.T) {
 				Platforms:       defaultPlatforms,
 				GoBuildArgs:     []string{},
 				DigestAlgorithm: digest.SHA512,
+				Parallelism:     defaultParallelism,
 			})
 
 		cmd := Cmd{
@@ -164,6 +169,7 @@ func TestCmd_Run(t *testing.T) {
 				GoBuildArgs:       []string{},
 				DigestAlgorithm:   digest.SHA256,
 				TemplateFilenames: []string{"template1", "template2"},
+				Parallelism:       defaultParallelism,
 			})
 
 		cmd := Cmd{
@@ -171,6 +177,30 @@ func TestCmd_Run(t *testing.T) {
 			Env:  mock_env.NewMockInterface(ctrl),
 		}
 		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-t", "template1 template2"}, version)
+		if exitCode != 0 {
+			t.Errorf("exitCode wants 0 but %d", exitCode)
+		}
+	})
+
+	t.Run("WithParallelism", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		xzstUseCase := mock_xzst.NewMockInterface(ctrl)
+		xzstUseCase.EXPECT().
+			Do(xzst.Input{
+				OutputDir:       "dist",
+				OutputName:      "hello",
+				Platforms:       defaultPlatforms,
+				GoBuildArgs:     []string{},
+				DigestAlgorithm: digest.SHA256,
+				Parallelism:     98,
+			})
+
+		cmd := Cmd{
+			XZST: xzstUseCase,
+			Env:  mock_env.NewMockInterface(ctrl),
+		}
+		exitCode := cmd.Run([]string{"goxzst", "-o", "hello", "-parallelism", "98"}, version)
 		if exitCode != 0 {
 			t.Errorf("exitCode wants 0 but %d", exitCode)
 		}
